@@ -1,0 +1,45 @@
+\documentclass[a4paper]{book}
+\usepackage[italian]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[sc]{mathpazo} % Palatino!
+\linespread{1.05}         % Palatino needs more leading (space between lines)
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{wrapfig}
+\usepackage{bbding}
+\usepackage{float}
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=2cm,right=2cm,bindingoffset=5mm]{geometry}
+\usepackage[font=small,format=hang,labelfont={sf,bf}]{caption} % Per un diverso carattere per le didascalie
+
+
+\newenvironment{esercizio}{\subsection{Esercizio}\sffamily}{}
+
+\author{Ingegnere Pazzo \\ http://ingegnerepazzo.wordpress.com/}
+\title{Appunti di Sistemi d'elaborazione dell'informazione \\ (Prima versione)}
+
+\begin{document}
+
+\maketitle
+\thanks{Si consiglia di affiancare il materiale presente in questo riassunto agli appunti presi a lezione. Questo perché (ovviamente!) non ho alcuna presunzione di esaustività, né di assoluta correttezza: nonostante una prima revisione, potrebbero infatti essere ancora presenti molti errori e imprecisioni. Si ringrazia il prof. Tullio Salmon Cinotti per avermi permesso di usare, in questi appunti, alcune immagini tratte dalle sue \textit{slides}.}
+\tableofcontents
+\input{Introduzione.tex}
+\input{Pipeline.tex}
+\input{ia32.tex}
+\input{protezione.tex}
+\input{gerarchia.tex}
+\input{Banchi.tex}
+\input{Bridge.tex}
+\input{dma.tex}
+\input{EserciziTomasulo.tex}
+\input{Esercizi23.tex}
+
+\listoffigures
+
+
+\end{document}

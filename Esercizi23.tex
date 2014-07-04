@@ -1,0 +1,625 @@
+\chapter{Quattro esempi di esercizi da 23 punti: commento alle soluzioni}
+\label{cha:commentoSoluzioni}
+
+Ove non espresso diversamente, i numeri [\ldots] si riferiscono al numero della slide della soluzione.
+
+\section{Compito del 27 maggio 2004}
+\label{sec:27mag04}
+
+\subsection{\textit{Flow chart}}
+
+Il programma deve:
+\begin{itemize}
+\item ricevere A in DMA;
+\item eseguire A = A or B;
+\item ricevere nuovamente A;
+\item eseguire B = A and B.
+\end{itemize}
+Quando nei testi non si parla di PIC, e ci viene chiesto di andare a ricevere/trasmettere qualcosa tramite il DMAC, dobbiamo sempre fare riferimento alla soluzione \textit{a polling}: ciò significa che, per verificare se sia terminata la ricezione/trasmissione di un dato, sarà necessario interrogare il bit TC (\textit{terminal count}). Un po' differente è la soluzione imperniata sull'uso del meccanismo delle interruzioni: spesso, in tal caso, sarà necessario definire dei nuovi \textit{task} espressamente dedicati alla ricezione del messaggio. Nella soluzione a \textit{polling}, invece, spesso tutta la procedura da eseguire è "'condensata'" all'interno della \textit{flow chart} del \textit{main program}.
+La \textit{flow chart} [5] viene quindi abbastanza naturale:
+\begin{itemize}
+\item prima dovremo inizializzare tutti i registri;
+\item dopodiché si chiama l'\textit{initiator}: tramite esso sarà possibile ricevere A attraverso il DMAC;
+\item a questo punto facciamo \textit{polling} sul bit TC. Se esso è pari a 0 vorrà dire che ancora il trasferimento non è completo e dovremo attendere; in caso contrario possiamo proseguire nel flusso d'istruzioni del programma; 
+\item effettuiamo l'operazione OR;
+\item nuova ricezione, nuova \textit{call} dell'\textit{initiator};
+\item ancora una volta si fa \textit{polling} sul bit di TC;
+\item una volta terminata anche la seconda transazione effettuiamo l'AND.
+\end{itemize}
+Si noti che l'\textit{initiator} va chiamato ogni volta che dobbiamo effettuare una transazione di I/O!
+
+\subsection{Schema a blocchi}
+\label{sec:schemaBlocchiMadre}
+
+Lo schema a blocchi è abbastanza "'meccanico'" da disegnare: in tutti gli esercizi vi sono la CPU, la RAM e la EPROM connessi al bus dati (64 bit), nonché il bridge che interfaccia tale bus con quello di I/O (8 bit). Quel che è collegato al bus di I/O dipende specificatamente dall'esercizio: può esserci un PIC, un DMAC, una o più periferiche (spesso porte seriali o porte parallele). In questo caso abbiamo semplicemente la porta P\_IN e il DMAC [8].
+
+\subsection{Interfacciamento del DMAC}
+\label{sec:DMACmadre}
+
+L'interfacciamento del DMAC è un po' delicato soprattutto quando si utilizza una mappatura \textit{non contigua} dei dati (ovvero quando non tutti i banchi della memoria fisica vengono utilizzati). Purtroppo è questo il caso: A occupa infatti solo i banchi 0 e 1 (degli 8 totali), mentre B è mappato a indirizzi contigui.
+Siccome B non verrà mai ricevuto tramite la porta seriale, possiamo modificare lo schema di interfacciamento del DMAC rendendolo specifico e completamente dedicato alla ricezione di A [13]. Il DMAC ha sì una rete in grado di generare i segnali di BE (\textit{bank enable}), tuttavia essa dev'essere alterata per far sì che indirizzi contigui per il DMAC (lui, \textit{purèt}, sa solo indirizzare la memoria in modo incrementale o decrementale) siano in realtà indirizzi \textit{interleaved} verso la memoria (ovvero sul bus degli indirizzi), cosicché a noi basterà programmare il BAR con l'indirizzo-base a cui si trova A e inserire nel BCR il numero di byte da trasmettere dalla porta seriale. Al resto, cioè a inter\textit{leave}are gli indirizzi, deve pensarci una rete logica che interfacci correttamente il DMAC al bus degli indirizzi. 
+Non è però finita qui: il DMAC deve poter essere programmato e/o gestito dalla CPU quando quest'ultima è \textit{master}. L'interfacciamento di cui sopra deve quindi essere \textit{bidirezionale}, nel senso che l'inter\textit{leave}aggio automatico degli indirizzi non deve essere operativo quando dalla CPU indirizziamo il DMA controller per leggere/scrivere nei suoi 16 byte "'interni'": per fare ciò esistono infatti i pin A[3\ldots 0], i quali devono poter essere interfacciati con i rispettivi pin BA [3\ldots 0] (del bus dati) \textit{senza alterazioni} (alterazioni che invece sarà necessario abilitare quando il DMAC è \textit{master}).
+Noi siamo però aspiranti ingegneri forti e scaltri\footnote{Beh, sì, insomma\ldots Ce la caviamo!} e non ci facciamo spaventare: possiamo infatti sfruttare a nostro vantaggio un segnale, HOLDA, che è in grado di dirci se comanda la CPU (HOLDA = 0) oppure il DMAC (HOLDA = 1). La presenza di tale segnale ci fa comodo perché in questo modo la nostra rete logica inter\textit{leave}atrice potrà discriminare i due casi e funzionare bene in ogni situazione. \\
+
+Passiamo ora ad esaminare la slide [13]. L'idea è: dobbiamo fare in modo che vengano continuamente selezionati i banchi 0 e 1. Byte per byte, gli indirizzi che il DMAC dovrà generare saranno quindi:
+\begin{verbatim}
+0000 8000H (banco 0)
+0000 8001H (banco 1)
+0000 0008H (banco 0)
+0000 0009H (banco 1)
+0000 8010H (banco 0)
+0000 8011H (banco 1)
+0000 0018H (banco 0)
+0000 0019H (banco 1)
+etc...
+\end{verbatim}
+Come si nota, dopo la scrittura di due byte in memoria dobbiamo "'saltare di 6'" per finire nella riga sopra (si pensi allo schema in [9] e [12]). Come ce la sgavagnamo? Proviamo ad immaginare il seguente interfacciamento, in cui A è un pin del DMAC e BA è un pin del bus indirizzi:
+\begin{verbatim}
+A0 --> BA0
+A1 --> BA3 (!)
+A2 --> BA4
+A3 --> BA5
+A4 --> BA6
+e così via...
+\end{verbatim}
+Avremo la corrispondenza fra le seguenti coppie (indirizzo generato dal DMAC, indirizzo che va a finire sul bus degli indirizzi)\footnote{Solo per alcune cifre esadecimali, le meno significative in entrambi i casi!}:
+\begin{verbatim}
+DMAC              BUS INDIRIZZI
+0... 00H          ... 00H
+0... 01H          ... 01H
+0... 02H          ... 08H (A1 finisce in A3 --> 2 = 0010 => 1000 = 8)
+0... 03H          ... 09H (A1 finisce in A3 e A0 sta dov'è --> 3 = 0011 => 1001 = 9)
+\end{verbatim}
+Siamo quindi riusciti ad ottenere il risultato tanto agognato semplicemente collegando i pin dei due estremi (DMAC e bus) in maniera astuta!
+Configurando quindi opportunamente il DECODER (che prende solo A0 per generare gli unici 2 BE possibili) e collegando i pin del DMAC successivi al primo ai relativi pin (ma \emph{sfasati di 2}!) del bus dati possiamo ottenere il comportamento desiderato quando il DMAC è \textit{master}. Anche la situazione in cui la CPU comanda il DMAC è salva, perché ci sono l'ENCODER e un DRIVER a gestire rispettivamente gli otto segnali di BE (da tradurre in un numero binario di 3 bit, che costituiranno il BA[2\ldots 0]) e il segnale BA3 per l'indirizzamento dei 16 registri del DMAC.
+In virtù della scelta fatta poco fa per interfacciare DMAC e BUS, al \textit{latch} HH (quello che genera gli 8 bit più significativi dei 32 che andranno a finire sul bus degli indirizzi) andranno collegati i soli pin IOB[5\ldots 0]. Il \textit{latch} HL, invece, riceve i soliti IOB[7\ldots 0]; sia HL e HH campionano in maniera asincrona ciò che ricevono dal bus di I/O una volta che LE (= CS\_HL\# nor IOWRC\# per HL e = CS\_HH\# nor IOWRC\# per HH), ovvero quando la CPU è \textit{master} e vuole programmare il DMAC. L'OE, invece, si attiva quando HOLDA e alto e quando quindi il DMAC è \textit{master} e vuole indirizzare la memoria da 32 bit.
+Grazie ai \textit{latch} e all'uso degli 8 bit per i dati (D[7\ldots 0]) riusciamo a raggiungere i 32 necessari a indirizzare qualunque porzione della nostra memoria (o, meglio, questo è vero nel caso generale: questo DMAC modificato può unicamente raggiungere i banchi 0 e 1)!
+
+\subsection{Programmazione del DMAC}
+
+Anche questo punto è un po' delicato quando bisogna fare i conti con l'indirizzamento \textit{interleaved}. La tentazione è infatti quella di scrivere
+\begin{verbatim}
+BAR = 8000H
+\end{verbatim}
+in quanto nel testo si dice che A è ivi mappato. Ciò però costituirebbe un errore in virtù di quanto detto nel paragrafo precedente: non vi è corrispondenza 1-a-1 fra i pin del DMAC e quelli del bus degli indirizzi! Dobbiamo quindi in qualche modo "'tradurre'" questo indirizzo in quello corretto che tenga conto della rete logica interposta fra DMAC e BUS. Considerando che si ha uno sfasamento di 2 posizioni fra i bit in uscita dal DMAC e quelli del BUS, l'indirizzo 8000H corrisponderà a
+\begin{verbatim}
+1000 0000 0000 0000 => 0010 0000 0000 0000
+   8    0    0    0 =>    2    0    0    0
+\end{verbatim}
+Dovremo quindi scrivere
+\begin{verbatim}
+BAR = 2000H
+\end{verbatim}
+Il BCR, invece, non viene mai influenzato dalla questione dell'indirizzamento \textit{interleaved} e quindi basta inserire il numero di byte da trasferire - 1 (64 byte - 1 = 63 byte):
+\begin{verbatim}
+BCR = 40H - 1 = 3FH
+\end{verbatim}
+
+
+\subsection{Disegnare ai morsetti la porta P\_IN}
+
+La periferica P\_IN è una porta parallela a 16 bit e quindi un dispositivo con $k = 2$: essa ha cioè 4 registri interni da 8 bit (la parte LSB del dato, la parte MSB del dato, il registro di stato e un quarto registro \textit{undefined}\footnote{Con un singolo bit non potevano indirizzare tre registri, mentre con due ne indirizziamo uno in più del necessario, il che è sovrabbondante, ma non possiamo farci niente!}) e sono necessari 2 bit per poterli indirizzare tutti quanti. In [10] possiamo vedere la tabella che indica le corrispondenze fra indirizzo e registro al quale si accede: risulta evidente che tale dispositivo occuperà 4 posizioni nello spazio di I/O. Ciò significa che, se abbiamo scelto 800H come indirizzo base al quale mappare la periferica, saranno a quest'ultima riservati gli indirizzi 800H\ldots 803H
+
+Gli altri PIN importanti sono STROBE, utile alla sincronizzazione, DIN[15\ldots 0], per la ricezione dei dati dall'esterno, CS*, il \textit{chip select}, D[7\ldots 0], per la connessione al bus di I/O, IORD\#, da parte del bus dei comandi, e SRQ, per poter segnalare al DMAC che si vuole effettuare una transazione di I/O.
+
+
+\subsection{Forme d'onda}
+L'ordine di attivazione è il seguente (le forme d'onda sono riportate in [16] e si riferiscono ad A(30). Quelle di A(31) sono praticamente identiche, salvo pochissime modifiche):
+\begin{itemize}
+\item DRQ $\to$ 1: "'DMAC, devo trasmetterti qualcosa!'";
+\item HRQ $\to$ 1: il DMAC accoglie la richiesta e fa si appella alla CPU per poter gestire il bus;
+\item HOLDA $\to$ 1: la CPU, dopo aver finito quel che doveva finire, concede il permesso al DMAC;
+\item arrivano gli indirizzi: i BE sono da intendersi attivi bassi quindi saranno tutti ad uno tranne l'ultimo (primo dato, FEH) e il penultimo (secondo dato, FDH). In BA ci andrà invece l'offset di A(30), che è 101EH
+\begin{verbatim}
+Indirizzo "effettivo":
+8    0    F    0
+1000 0000 1111 0000
+
+Offset (l'indirizzo effettivo diviso per 8 --> 3 shift a DX):
+1    0    1    E
+-->1 0000 0001 1110 
+\end{verbatim}
+\item arrivano i comandi di lettura del primo byte dalla periferica (IORD\# si abbassa) e della sua scrittura in memoria (MEMWR\#);
+\item arrivano gli stessi comandi, ma per il secondo byte: in seguito all'abbassamento di IORD\# si abbassa anche DRQ, perché la periferica ha trasmesso tutto quello che aveva da trasmettere;
+\item a questo punto si abbassano HRQ e DACK;
+\item infine HOLDA torna basso e la CPU nuovamente è \textit{master}; si intravede infine la nuova risalita di DRQ per la ricezione degli ultimissimi 2 byte corrispondenti alla \textit{word} A(31).
+\end{itemize}
+Alla termine della ricezione dell'ultimo dato, l'EOP\# si attiverà ($\to$ 0) in corrispondenza dell'abbassamento di MEMWR\# dovuto alla ricezione dell'ultimo byte.
+
+\subsection{\textit{Cache} e stato MESI}
+
+Prima cosa da fare quando si tratta di scegliere dove andare a posizionare i nostri dati in \textit{cache}, trasferendoli dalla memoria fisica, è disegnarsi lo schemino con (TAG, SET\_ID, OFFSET): in questo modo potremo capire su quale linea di \textit{cache} (ve ne sono \textit{n} per SET\_ID, dove \textit{n} è il numero di vie) andare a posizionare i nostri dati.
+Nel nostro caso:
+\begin{verbatim}
+**** PER A:
+0      0      0      0      8      0      0      0    H 
+0000   0000   0000   0000   1000   0000   0000   0000
+|                              |   |        ||       |
+|             TAG              |   | SetID  ||Offset |
+
+TAG: 00008H   SetID: da 00H a 07H
+
+**** PER B:
+0      0      0      0      4      0      0      0    H 
+0000   0000   0000   0000   0100   0000   0000   0000
+|                              |   |        ||       |
+|             TAG              |   | SetID  ||Offset |
+
+TAG: 00004H   SetID: da 00H a 01H
+\end{verbatim}
+
+A, in virtù della sua stravagante posizione in memoria fisica, occuperà più linee di \textit{cache} di quanto si possa credere ad un primo acchito. Ogni linea, infatti, può ospitare fino a 32 byte, i quali vengono presi dalla memoria fisica tramite cicli \textit{burst}: ognuno di questi cicli porterà in \textit{cache} quattro blocchi di 8 byte (uno per banco), ma di questi 8 byte solo 2 conterranno il vettore A. Perciò A non occupa solo 2 linee di \textit{cache} (64 byte / 32 byte = 2) bensì 4 volte tante, cioè 8 (ecco perché il setID va da 00H a 07H).
+Il calcolo che era errato per A va invece bene per B in virtù della sua disposizione a indirizzi contigui (2 linee di \textit{cache}, setID da 00H a 01H).
+Si noti inoltre che i due dati hanno in comune i setID 00 e 01: A e B non possono quindi stare sulla stessa via (vedi [25]).
+
+L'evoluzione della \textit{cache} è la seguente:
+\begin{itemize}
+\item inizialmente è invalida (\textbf{I}) perché non contiene il dato;
+\item per effettuare l'operazione A = A or B la \textit{cache} ha bisogno di entrambi i vettori e, dopo una \textit{miss} obbligatoria, li carica nelle sue linee con stato MESI \textbf{E} (lo stato sarebbe invece \textbf{S} se lavorassimo con politica \textit{write true});
+\item dovendo sovrascrivere A in \textit{cache} con il relativo valore aggiornato, pone il relativo stato MESI a \textbf{M};
+\item riceviamo nuovamente A in DMA ma, nel fare ciò, la CPU \textit{snoop}pa e si accorge che si vuole sovrascrivere tale vettore in memoria centrale: prima che ciò avvenga, la \textit{cache} passa il dato alla RAM e setta lo stato MESI a \textbf{I} (invalido);
+\item bisogna eseguire B = A and B, quindi bisogna ricaricare in \textit{cache} A. Lo stato MESI ripassa a \textbf{E};
+\item effettuato il calcolo scriviamo in B, quindi A rimane in \textbf{E} e B passa in \textbf{M}.
+\end{itemize}
+
+\subsection{Cicli di bus esterno}
+
+Per cicli di bus esterno si intendono quelli da/verso la memoria fisica.
+Essi sono:
+\begin{itemize}
+\item quelli effettuati dal DMAC per scrivere A in memoria: A è un dato di 64 byte e il DMAC scrive un byte alla volta, per cui i cicli esterni sono $64\cdot 2 = 128$ (64 per ogni trasferimento);
+\item quelli dovuti al \textit{Write Back Hit-Modified} (effettuati dalla CPU): essi sono 8, cioè uno per ogni linea di \textit{cache} di A. Infatti A è stato modificato (stato MESI = M) in seguito alla prima operazione vettoriale, cosicché si è resa necessaria una sua copia in memoria fisica prima della sua seconda ricezione in DMA;
+\item quelli dovuti alle \textit{miss obbligatorie} (effettuati dalla CPU), ovvero quelli necessari a trasferire A e B per la prima volta in memoria: in questo caso abbiamo 10 cicli \textit{burst} (8 per A e 2 per B).
+\end{itemize}
+
+\subsection{\textit{Miss-Rate} sui dati}
+
+Quando si calcola la \textit{miss rate} bisogna sempre fare riferimento alla \textit{cache}: considerando di fare le nostre operazioni byte-per-byte abbiamo
+\begin{itemize}
+\item per fare l'OR - 32 accessi in lettura per leggere A, 32 accessi in lettura per leggere B, 32 accessi in scrittura per scrivere il vettore A risultante dall'operazione;
+\item per fare l'AND - 32 accessi in lettura per leggere A, 32 accessi in lettura per leggere B, 32 accessi in scrittura per scrivere il vettore B risultante dall'operazione.
+\end{itemize}
+Il totale è quindi di 192 accessi. Si noti che non vengono considerati i cicli di \textit{write back hit-modified}.
+
+
+Le \textit{miss} sono invece 18:
+\begin{itemize}
+\item una per ogni linea di \textit{cache} di A, per un totale di 8. Queste sono le \textit{miss} obbligatorie che servono per poter portare in memoria il vettore A: le miss sono 8 e non 64 perché, in reazione ad ogni \textit{miss}, si ha un ciclo \textit{burst} che porta in \textit{cache} direttamente 8 byte del nostro vettore (1 miss = 8 byte trasferiti; 8 miss = 64 byte trasferiti!);
+\item altre 8, sempre per A, visto che in seguito alla seconda ricezione la \textit{cache} è invalida e dobbiamo fare fronte ad ulteriori 8 cicli \textit{burst} per prelevare il dato aggiornato dalla RAM;
+\item una per ogni linea di \textit{cache} di B, per un totale di 2.
+\end{itemize}
+
+Abbiamo quindi 18 miss e 192 accessi: la \textit{miss rate} sarà quindi pari a
+\[
+\dfrac{18}{192} = 9,4\% 
+\]
+
+\section{Compito del 21 giugno 2005}
+\label{sec:21giu05}
+
+\subsection{Schema a blocchi}
+Quesito che non ha bisogno di molti commenti: si faccia riferimento al paragrafo \ref{sec:schemaBlocchiMadre} e alla slide [4].
+
+\subsection{Schema di indirizzamento di I/O}
+Altra domanda abbastanza meccanica e non molto impegnativa: essa consiste nel compilare una tabellina simile a quella in [5], in cui andare ordinatamente a elencare i componenti di I/O e le memorie. Si presti attenzione anche alla corretta definizione dei \textit{chip select} semplificati (vedere Calcolatori L-A).
+\begin{itemize}
+\item RAM: dimensione dipendente da quanto scritto nel testo del problema (quasi sempre 1 MB), segnali di controllo MEMWR\# e MEMRD\# (scriviamo e leggiamo);
+\item EPROM: dimensione dipendente da quanto scritto nel testo del problema (quasi sempre 4 MB), segnali di controllo MEMRD\# (sola lettura!);
+\item PIC: 2 byte in spazio di I/O, segnali di controllo IORDC\#, IOWRC\# e, non dimentichiamoci, INTA\#!
+\item porta seriale: 8 byte in spazio di indirizzamento di I/O, segnali di comando IORDC\# e IOWRC\#;
+\item DMAC: 16 byte in spazio di indirizzamento di I/O, segnali di comando IORDC\# e IOWRC\#;
+\item una coppia di \textit{latch} per ogni canale del DMAC (in realtà ciò potrebbe rivelarsi ridondante nel caso i canali condividessero i bit in uscita da tali \textit{latch}): ogni \textit{latch} è mappato in 1 byte di spazio di indirizzamento di I/O ed è gestito dal segnale di comando IOWRC\# (la CPU può solo programmarli, è il DMAC che li legge quando HOLDA è alto).
+
+\end{itemize}
+
+\subsection{Interfacciamento del DMAC}
+
+Dobbiamo memorizzare i nostri messaggi agli indirizzi $i0000$H per cui il \textit{latch} per gli 8 MSB (corrispondenti alle 2 cifre esadecimali più significative dell'indirizzo) non ha molte responsabilità visto che essi sono sempre pari a 00H durante tutta la transazione. L'interfacciamento, mostrato in [6], è quindi abbastanza banale.
+
+Non è invece così banale l'interfacciamento del \textit{latch} che gestisce i bit di indirizzo BA[23\ldots 16]. Sua è infatti la gestione della 3° e della 4° cifra esadecimale dell'indirizzo (contando a partire dalle più significative): quest'ultima, in particolare, assumerà valori da 1 a F per un totale di 16 configurazioni diverse (una per messaggio).
+L'interfacciamento è mostrato in [7]. 
+\begin{itemize}
+\item Quello che dovrebbe essere il nostro \textit{latch} viene in realtà implementato tramite un contatore. Questo non toglie che sarà necessario settare un valore di partenza del conteggio, alla stregua come viene campionato il valore del \textit{latch} all'attivazione del segnale LD: in effetti la figura mostra che, quando sono attivi il segnale IOWRC\# e il \textit{chip select} del nostro contatore, il contatore si inizializza con ciò che arriva dall'I/O bus. 
+\item Questo contatore deve poter essere incrementato ad ogni ricezione. L'incremento avviene in maniera automatica ogni volta che si ha un fronte (in questo caso negativo) del clock: il segnale che funge da clock è l'OR fra il segnale di MEMWR\# e il DACK\# del canale 0 (ciò significa che viene incrementato l'indirizzo quando il DMAC sta diventando \textit{master} e vuole scrivere in memoria ciò che viene gestito dal canale 0; questo avviene quando il DMAC sta iniziando a trasferire un messaggio, quindi la scelta è corretta).
+\item Dobbiamo essere in grado di inviare un segnale al PIC per segnalare l'avvenuta ricezione di ognuno dei nostri messaggi. Per fare ciò possiamo sfruttare il carattere 0DH inviato dalla periferica, il quale è preposto a segnalare proprio tale eventualità; esso viene quindi dato in pasto a un comparatore in grado di confrontare tale valore con ciò che passa sull'I/O bus. Se sta arrivando il carattere di fine transazione, quindi, il comparatore restituisce 1: tale segnale viene messo in NAND con MEMWR\footnote{Il prof. ha confermato che c'è un errore nella slide.} (attenzione: MEMWR è 1 quando si scrive in memoria!) e con DACK (anche questo segnale, si noti, è preso ora in logica positiva) cosicché viene segnalato l'EOP\# quando DACK, MEMWR e il risultato del comparatore valgono contemporaneamente 1, il che significa che stiamo scrivendo in memoria (il DMAC è ancora master), che stiamo trasferendo proprio da quella periferica (usiamo il DACK del canale 0, cioè verso la nostra periferica) e che sta finendo il messaggio (a ciò serve il carattere 0DH).
+\item L'uscita del comparatore è fornisce anche l'\textit{enable} che permette al contatore di incrementarsi (in fin dei conti dobbiamo aggiornare l'indirizzo, cioè il valore del contatore, alla fine di ogni messaggio per prepararlo alla ricezione del successivo). Inoltre, tale segnale viene dato in pasto alla piccola rete logica della parte SX di [7], la quale genera un interrupt (setta IR0 del PIC) al termine della ricezione del quindicesimo messaggio. Se il contatore vale infatti 0FH = 0000 1111, i quattro "'uni'" assieme al segnale del comparatore fanno campionare un '1' al Flip-flop D e permettono l'attivazione di IR0 quand'è il momento (cioè quando sono stati ricevuti tutti e 15 i messaggi).
+
+\end{itemize}
+
+Per il resto dell'interfacciamento e ulteriori dettagli si vedano le slide del prof e il paragrafo \ref{sec:DMACmadre}: in questo caso, tra l'altro, andiamo a memorizzare il dato a indirizzi contigui quindi non c'è bisogno di effettuare un interlacciamento "'speciale'" fra DMAC e bus degli indirizzi (il che rende il caso ancora più semplice di quello mostrato nel paragrafo \ref{sec:DMACmadre}).
+
+\subsection{Programmazione del DMAC}
+
+Programmare il DMAC significa definire il contenuto di BAR, BCR e la configurazione del \textit{register mode}.
+
+Nel BAR vanno scritti i 16 bit meno significativi dell'indirizzo base al quale andremo a porre le nostre informazioni in memoria fisica (agli altri 16 bit pensano i \textit{latch}).
+Nel nostro caso, dovendo andare a porre i messaggi a $i0000$H, lasceremo il BAR a 0000H.
+Nel BCR dobbiamo invece andare a inserire il numero di byte da trasferire (meno 1) per ogni messaggio e quindi
+\begin{verbatim}
+BCR = 1K - 1 = 3FFH
+\end{verbatim}
+
+Imposteremo poi il \textit{register mode} con: 
+\begin{itemize}
+\item \textit{single mode};
+\item indirizzi autoincrementanti\footnote{Orribile, detto in italiano.};
+\item \textit{write-to-mem};
+\item modalità \textit{autoinit} attivata;
+\item canale 0.
+\end{itemize}
+
+\subsection{Integrazione della porta seriale}
+
+L'aspetto fondamentale dell'integrazione delle 2 porte seriali 8250 risiede nell'inserimento di 3 MUX, uno per A0, uno per A1 e uno per A2 (necessari per pilotare i segnali che andranno in ingresso alla seriale) e nella definizione del CS. I tre \textit{multiplexer} saranno comandati da HOLDA: se HOLDA = 1 significa che è il DMAC ad avere il campo quindi A0, A1 e A2 vengono posti a massa. In caso contrario, la CPU deve poter indirizzare i registri interni della porta seriale 8250 e quindi A0, A1 e A2 vengono collegati ai rispettivi pin del bus degli indirizzi.
+
+Abbiamo poi bisogno di un altro \textit{multiplexer} per comandare il \textit{chip select} della nostra porta seriale: nel caso infatti che sia \textit{master} la CPU, il CS è quello indicato nella tabella di indirizzamento dei dispositivi (/BA10 /BA9 BA8 o, in logica legata, visto che in figura [9] CS è attivo basso, BA10 + BA9 + /BA8\footnote{Sono state utilizzate le leggi di De Morgan.}); se invece sta lavorando il DMAC, il CS è dato dal DACK.
+
+\subsection{Mostrare il contenuto di PT, PD e CR3}
+
+Forse questo è uno dei punti più "'delicati'" dell'intero esercizio, non tanto per la difficoltà ma per l'attenzione che richiede nel calcolo degli indirizzi.
+
+
+Si faccia riferimento a [10]: nel testo si dice che negli ultimi 8 KB di memoria fisica sono presenti la PD (\textit{Page Directory}) e la PT (\textit{Page Table}) dei primi 4 MB di memoria virtuale. Sia la PT che la PD han dimensione pari a 4 KB quindi possiamo scegliere di porre la PD all'indirizzo 000F E000H e la PT a 000F F000H. I quindici messaggi da memorizzare si trovano per ipotesi agli indirizzi $i0000$H (della memoria fisica, $i$ = indice del messaggio) quindi riescono a stare tutti nei primi 4 MB di memoria virtuale (che terminano all'indirizzo 3F FFFFH). Questo significa che la PT mappata a FF000H sarà grande a sufficienza da contenere tutte le quindici \textit{entry} che si riferiscono ai nostri messaggi.
+
+In CR3 vanno inserite le 5 \textit{most significant} cifre esadecimali dell'indirizzo della \textit{page directory} (gli altri 12 bit sono automaticamente a 0 perché la PD è grande 4 KB ed è posizionata ad indirizzi allineati).
+Considerando:
+\begin{itemize}
+\item che ogni PDE contiene il riferimento ad una \textit{Page Table} (anche lei di 4 KB), la quale conterrà 1 K \textit{entry} (dette PTE) che a loro volta si riferiranno alle pagine vere e proprie (pure loro di 4 KB),
+\item che i nostri messaggi si trovano tutti nei primi 4 MB di memoria virtuale, 
+\end{itemize}
+l'entry da inserire in PD è dovrà puntare alla PT che abbiamo diligentemente mappato all'indirizzo fisico FF000H (e che è la prima, come dicevamo poco sopra) in quanto lì si troveranno le PTE puntanti alle pagine di 4 KB coi messaggi veri e propri. 
+
+Siccome ogni \textit{entry} della \textit{page table} è di 4 byte, come facciamo a sapere quali sono le righe della PT che contengono i riferimenti ai nostri messaggi?
+Anzitutto cerchiamo di capire l'ID delle pagine contenenti i dati tratti da DMAC: se ogni pagina è di 4 KB, per trovare l'ID della pagina (cioè il numero della pagina, supponendo di numerarle in maniera incrementale a partire da quella a indirizzi più bassi) basta semplicemente "'segare'" le tre cifre esadecimali meno significative dell'indirizzo in memoria virtuale:
+\begin{verbatim}
+PAGINA "numero 0" : indirizzo IV iniziale --> 0000 0000 H --> Page_ID = 0000 0 H
+PAGINA "numero 1" : indirizzo IV iniziale --> 0000 1000 H --> Page_ID = 0000 1 H
+...
+
+MESSAGGIO 1:  0001 0000 H --> Page_ID = 0001 0H
+MESSAGGIO 2:  0002 0000 H --> Page_ID = 0002 0H
+...
+MESSAGGIO 15: 000F 0000 H --> Page_ID = 000F 0H
+\end{verbatim}
+Il Page\_ID è anche pari all'ID della PTE, cioè al numero della "'riga'" della \textit{Page Table}. Il primo messaggio sarà quindi alla 10H-sima riga (cioè alla 16°, contando da 0) e verrà riferito dalla 10H-sima \textit{Page Table Entry}, il secondo alla 20H-sima (cioè alla 32°) e verrà riferito dalla 20H-sima \textit{Page Table Entry}, e così via. 
+
+Ora si tenga presente che ogni PTE occupa 4 byte; detto questo, è semplice capire a quale indirizzo fisico si trovino le \textit{entry}: basta infatti moltiplicare per 4 il Page\_ID per calcolare l'offset all'interno della PT. E infatti:
+\begin{verbatim}
+4 byte ogni PTE
+                                                      BASE      OFFSET      IF
+MESSAGGIO 1:  Page_ID = PTE_ID = 0001 0H @ indirizzo FF000H + (10H x 4) = FF040H
+MESSAGGIO 2:  Page_ID = PTE_ID = 0002 0H @ indirizzo FF000H + (20H x 4) = FF080H
+...
+MESSAGGIO 15: Page_ID = PTE_ID = 000F 0H @ indirizzo FF000H + (F0H x 4) = FF3C0H
+\end{verbatim}
+
+In tutte le \textit{entry} specificate (sia quella in PD sia quella nelle PT) andremo a mettere il bit \textit{Present} a 1.
+
+\subsection{Valori dei TAG e dei SET\_ID}
+
+Punto abbastanza banale, oserei dire. Basta prendere gli indirizzi virtuali dei primi due messaggi:
+
+\begin{verbatim}
+Primo messaggio:   IV da 10000H a 103FFH
+Secondo messaggio: IV da 20000H a 203FFH
+
+
+BIT                  31         ...            12 11   ...     5  4  ...      0
+                     |          TAG             |  |  SET ID   |  |  OFFSET   |
+1° messaggio: 10000H   0000 0000 0000 0001 0000     00H --> 1FH       ---         
+2° messaggio: 20000H   0000 0000 0000 0010 0000     00H --> 1FH       ---
+\end{verbatim}
+Il set\_ID iniziale e finale è stato calcolato tenendo conto che i messaggi sono di 1 KB e quindi iniziano e terminano agli indirizzi riportati nello schemino soprastante.
+
+\subsection{Si stimi il numero di TLB \textit{miss} e il numero di \textit{miss} nella \textit{cache} dei dati. Stato MESI}
+
+Iniziamo con le \textit{miss} in \textit{Translation Look-aside Buffer}: esse sono obbligatorie in quanto l'elaborazione richiesta (l'OR byte-per-byte dei primi due messaggi) richiede operandi che si trovano in due pagine di memoria virtuale; alla fine dell'operazione il TLB conterrà le corrispondenze tra IV e IF della pagina del primo messaggio (che è la stessa in cui si trova V, quindi prendiamo due piccioni con una fava) e della pagina del secondo messaggio: questi due elementi sono stati portati in TLB in seguito a \textbf{due} miss. \\
+
+Per quanto riguarda la \textit{miss-rate}:
+\begin{itemize}
+\item numero di accessi: 1024 per A, 1024 per B (dobbiamo leggere ogni byte dei due operandi), 1024 per V (scriviamo un byte alla volta del risultato);
+\item numero di \textit{miss}: 1024/32 = 32 per prelevare ciascun messaggio (attenzione: una \textit{miss} in lettura provoca un ciclo \textit{burst} in grado di trasferire 32 byte, cosicché si ha una \textit{miss} ogni 32 byte da trasferire), per un totale di 64 in lettura + 1024 \textit{miss} in scrittura (una per ogni \textit{byte} di V, come capita sempre nel \textit{write-around} quando si devono fare operazioni byte-per-byte) dovute al fatto che V non è presente in memoria e la politica di \textit{write-around} costringe il processore a "'scavalcare'" la \textit{cache} per scrivere il risultato direttamente in memoria fisica.
+\end{itemize}
+
+Si ha quindi una \textit{miss-rate} pari a 
+\[
+\dfrac{1024+64}{1024\cdot 3} = 35\%
+\]
+
+Siccome A e B vengono portati in memoria e mai alterati (scriviamo infatti su V), lo stato mesi sarà pari ad E per tutti.
+
+\section{Compito del 20 marzo 2008}
+\label{sec:20mar08}
+
+\subsection{Domande preliminari}
+
+\textsf{Nell'ipotesi che la velocità delle porte seriali sia 500 Kb/s, quante matrici al secondo
+vengono ricevute da S?}
+
+Ogni matrice contiene 4 x 4 word (per un totale di 32 byte). 
+Le matrici al secondo ricevute da S sono quindi:
+\[
+\dfrac{500\cdot 1024}{32\cdot 8}=2000
+\]
+
+\textsf{Nell'ipotesi che le CPU vadano a 100 MHz, e che ogni moltiplicazione richieda 20
+periodi di clock, quale percentuale del tempo disponibile è trascorso dalle CPU nel
+calcolo dei prodotti matriciali?}
+
+Un periodo di clock è lungo:
+\[
+\tau = 10^{-8} ~\text{s}
+\]
+Quindi ogni moltiplicazione (elementare) impiega 200 nanosecondi per essere eseguita. Il prodotto fra due matrici 4x4 richiede tuttavia 64 moltiplicazioni elementari (ogni elemento della prima matrice viene moltiplicato per quattro elementi della seconda, quindi le moltiplicazioni sono $16 \cdot 4 \cdot 4 = 64$), dunque il tempo richiesto per una moltiplicazione matriciale è:
+\[
+200 \cdot 64 = 12800 ~\text{ns} = 12,8 ~\text{us} 
+\]
+Il tempo di ricezione di una matrice è tuttavia 
+\[
+\dfrac{32 \cdot 8}{500\cdot 1024}= 500 ~\text{us} 
+\]
+Quindi il tempo speso a effettuare le operazioni di moltiplicazione è pari al 
+\[
+100 \cdot \dfrac{12,8}{500}= 2,5 \%
+\]
+del tempo totale. Volendo, possiamo approssimare al 3\% se consideriamo che, nel calcolo del prodotto matriciale, dobbiamo effettuare anche delle addizioni (le quali, tuttavia, sono molto più rapide delle moltiplicazioni) e vi saranno delle \textit{miss}.
+
+Un'architettura del genere è fortemente sbilanciata: non serve avere un processore così potente se poi la ricezione delle matrici è così lenta. Si potrebbe ridurre in modo molto più che lineare il consumo del sistema riducendo la frequenza di funzionamento, ad esempio fino a 10MHz, e riducendo di conseguenza anche la tensione di alimentazione delle CPU.
+
+\subsection{\textit{Data segment}}
+\label{sec:dataSegmentesPlay}
+
+Tutte le quantità che faranno parte del DS sono matrici rappresentate come vettori di 16 word: la sua definizione, dunque, è abbastanza immediata:
+\begin{verbatim}
+A      dw  16dup(?)
+B      dw  16dup(?)
+M_IN   dw  16dup(?)
+T1     dw  16dup(?)
+SCENE  dw  16dup(?)
+T2     dw  16dup(?)
+VIEW   dw  16dup(?)
+M_OUT  dw  16dup(?)
+***********
+dw = Double Word
+16dup(?) = 16 DWord inizializzate a 0
+\end{verbatim}
+
+Questo segmento di dati avrà un descrittore (mostrato in [16]), semplicissimo da compilare in quanto è sufficiente andare a sbirciare sulle slide del prof per trovarne la struttura e la descrizione di tutti gli attributi.
+L'unico (relativo) sforzo sta nel definire la base e il limite di tale segmento:
+\begin{itemize}
+\item BASE: ce la dice il testo, è 4000H;
+\item LIMITE: è il numero di byte del segmento (meno uno). Abbiamo 8 elementi, ognuno contenente 16 elementi da 2 byte ciascuno, dunque il limite è pari a  $8\cdot 16 \cdot 2 = 256$ byte meno uno. Scriveremo dunque nel relativo campo FFH (= 255).
+\end{itemize}
+
+\subsection{\textit{Flow Chart}}
+
+Punto un po' delicato per il numero relativamente elevato di cose di cui tener conto.
+Anzitutto dovremo definire due \textit{flow chart}, una per ogni processore, visto che le operazioni eseguite dai due Pentium sono diverse.
+Il primo processore:
+\begin{itemize}
+\item riceve tramite S1 le matrici e le memorizza in M\_IN,
+\item copia M\_IN in T1,
+\item esegue il prodotto matriciale ponendo il risultato in SCENE (e nel frattempo può già ricevere un'altra matrice),
+\item commuta FF1\_2.
+\end{itemize}
+Il secondo processore:
+\begin{itemize}
+\item interroga a \textit{polling} il FF1\_2,
+\item copia SCENE in un vettore M e commuta FF2\_1 per segnalare che SCENE è libero,
+\item esegue il prodotto matriciale e lo pone in VIEW,
+\item copia VIEW in M\_OUT, 
+\item invoca un trasferimento in DMAC.
+\end{itemize}
+
+\begin{verbatim}
+Flow Chart P1:
+
+1 - Initialization. ** Questa ci va sempre!
+2 - Programmazione del DMAC e call dell'initiator. 
+     ** Ad ogni transazione bisogna chiamare l'initiator
+3 - TC = 1? Se no, ricontrolla. Se sì, prosegui.
+4 - Copia di quanto ricevuto dal DMAC in T1.
+5 - Call initiator del DMAC. 
+     ** Intanto che moltiplichiamo la periferica può trasferire un altro dato
+6 - Esecuzione del prodotto matriciale.
+7 - Commutazione del FF1_2. 
+     ** Per segnalare che SCENE è pronto
+8 - FF2_1 è pari a zero? Se no, ricontrolla. Se sì, torna all'istruzione 3. 
+     ** Prima di poter ripartire dobbiamo essere sicuri che SCENE sia libero
+
+Flow Chart P2:
+1 - Initialization.
+2 - FF1_2 è a 1? Se no, ricontrolla. Se sì, prosegui.
+3 - Copia SCENE in T2.
+4 - Commuta FF2_1.
+5 - Esegue il prodotto matriciale e lo pone in VIEW.
+6 - Copia VIEW in M_OUT.
+7 - Chiama l'initiator.
+8 - TC = 1? Se no, ricontrolla. Se sì, ricomincia dall'istruzione 2.
+\end{verbatim}
+
+Volendo, si può fare una piccola modifica alla \textit{flow chart} di P2: siccome la trasmissione in DMAC è un collo di bottiglia conviene, a partire dalla seconda ricezione in poi, modificare la \textit{flow chart} di P2 come segue:
+
+\begin{verbatim}
+Flow Chart P2:
+1 - Initialization.
+2 - FF1_2 è a 1? Se no, ricontrolla. Se sì, prosegui.
+3 - Copia SCENE in T2.
+4 - Commuta FF2_1.
+5 - Esegue il prodotto matriciale e lo pone in VIEW.
+6 - TC = 1? Se no, ricontrolla. Se sì, ricomincia dall'istruzione 2.
+7 - Copia VIEW in M_OUT.
+8 - Chiama l'initiator.
+\end{verbatim}
+In questo modo il DMAC può trasferire il dato intanto che vengono effettuate altre operazioni come la copia di SCENE in M e il prodotto matriciale.
+
+\subsection{I \textit{flip-flop}: interfacciamento e \textit{routine} di commutazione}
+
+L'interfacciamento è mostrato in [24]: in realtà esso, a mio parere, è fin troppo esaustivo. Sono presenti:
+\begin{itemize}
+\item i due \textit{flip-flop};
+\item i componenti necessari sfruttare i segnali di comando per l'arbitraggio dei \textit{flip-flop};
+\item una rete logica programmabile PAL per la generazione dei \textit{chip select}.
+\end{itemize}
+Probabilmente era sufficiente mostrare i flip-flop e la rete generatrice dei segnali di \textit{Clear} e di \textit{Clock}. Si noti che, per come sono stati interfacciati, i FF commutano (Q negato retroazionato in D) all'arrivo del fronte di clock; grazie ai buffer 3-state, inoltre, non può esservi conflitto sull'IO bus.
+
+La \textit{routine} di commutazione è molto banale ed è mostrata in [26].
+
+\subsection{\textit{Cache} e \textit{miss}}
+
+Eccola, la vera bestia nera di questo compito. Nel rispondere a questa domanda bisogna in particolare tenere presente che:
+\begin{itemize}
+\item dobbiamo tenere presente la soluzione riportata nel paragrafo  \ref{sec:dataSegmentesPlay} per capire dove veramente si trovano i dati;
+\item abbiamo due CPU e quindi \textbf{dobbiamo schematizzare due diverse \textit{cache}}!
+\end{itemize}
+
+Anzitutto ci vengono chiesti \textit{tag} e \textit{set\_ID} delle linee di \textit{cache} associate alle matrici definite nel DS. Questa parte non dovrebbe creare difficoltà:
+
+\begin{verbatim}
+
+DS: da 4000H a 40FFH
+
+0      0      0      0      4      0      0      0    H 
+0000   0000   0000   0000   0100   0000   0000   0000
+0      0      0      0      4      0      F      F    H 
+0000   0000   0000   0000   0100   0000   1111   1111
+|                              |   |        ||       |
+|             TAG              |   | SetID  ||Offset |
+|                              |   |00 -> 07|
+
+TAG: 00004H   SetID: da 00H a 07H
+\end{verbatim}
+
+Abbiamo quindi 8 possibili linee di \textit{cache}, ognuna delle quali conterrà interamente uno dei dati dichiarati nel \textit{Data Segment} (ogni matrice occupa esattamente 32 byte). \\
+Il processore 1 avrà in \textit{cache}: M\_IN, T1, SCENE, A. \\
+Il processore 2 avrà in \textit{cache}: M\_OUT, T2, SCENE, VIEW, B. \\
+La disposizione è mostrata in [28] e richiede un attenta analisi delle posizioni dei dati dichiarati in  \ref{sec:dataSegmentesPlay}.
+
+La dinamica dello stato MESI è un po' più complicata:
+\begin{itemize}
+\item il DMAC riceve le informazioni in M\_IN. La CPU nel frattempo sta \textit{snoop}pando e quindi invalida il dato in \textit{cache} se è presente (durante la prima transazione il dato non è presente quindi l'invalidazione avviene dalla seconda ricezione in poi);
+\item la CPU ha bisogno di portare M\_IN in \textit{cache} per copiarlo in T1: lo stato MESI, per le linee associate a M\_IN, diventa E;
+\item alla prima transazione, le linee di \textit{cache} che si riferiscono a T1 non saranno presenti in memoria (stato I). Dal momento che viene effettuata la copia M\_IN $\to$ T1, quelle linee passeranno quindi allo stato E. Dalla seconda ricezione in poi, invece, le linee saranno inizialmente già presenti quindi passeranno in M una volta avvenuto il processo di copia;
+\item SCENE è inizialmente non presente in memoria (stato I, per entrambe le CPU): la cosa curiosa, tuttavia, è che in \textit{cache} non ci andrà mai a causa della politica di \textit{write-around}. SCENE, infatti, non essendo presente, viene direttamente scritto in memoria fisica! Dopo la moltiplicazione, il dato sarà I in P2 (nella sua \textit{cache} SCENE è presente, a differenza di quanto avviene per P1), in quanto la seconda CPU - dedita allo \textit{snooping} - si sarà accorta che qualcuno, altrove, ha scritto il dato aggiornato. Una volta ricevuto il dato aggiornato, lo stato MESI passerà ad E;
+\item SCENE viene copiato in T2: quel che avviene è esattamente identico a quanto illustrato nel terzo punto (copia di M\_IN in T1);
+\item idem per il calcolo di VIEW: la prima volta non c'è (I), poi viene portato in memoria (E) e infine modificato ad ogni calcolo (M);
+\item M\_OUT, non essendo in memoria, viene scritto in \textit{write-around}. Come SCENE, non capiterà mai che finisca in \textit{cache}.
+\end{itemize}
+
+In base a quanto detto fin'ora:
+\begin{itemize}
+\item non ci sono cicli di \textit{Hit-Modified WB} perché gli unici vettori condivisi tra più master (M\_IN, SCENE ed M\_OUT) non si trovano mai nello stato M: M\_IN viene solamente letto da una CPU (P1), SCENE viene scritto da P1, ma in \textit{Write Around} così come M\_OUT viene scritto in \textit{Write Around} da P2;
+\item non ci sono cicli di \textit{Cache-Replacement WB} in quanto nella situazione considerata non ci sono situazioni di conflitto sulla \textit{cache}.
+\end{itemize}
+
+Calcoliamo ora il \textbf{numero di accessi per P1}, nel calcolo delle prime 5 moltiplicazioni matriciali ("'unità di misura'": word):
+\begin{itemize}
+\item $16\cdot 5$ (lettura) per leggere in \textit{cache} M\_IN;
+\item $16\cdot 5$ (scrittura) per scrivere in \textit{cache} T1;
+\item $16 \cdot 2 \cdot 5$ (lettura) per eseguire la moltiplicazione (leggiamo entrambi gli operandi);
+\item $16\cdot 5$ per "'tentare'" di scrivere SCENE (in realtà si genera una \textit{miss} in scrittura).
+\end{itemize}
+TOTALE: 240 accessi in lettura, 160 accessi in scrittura, 400 accessi in totale. \\
+\textbf{Numero di accessi per P2:}
+\begin{itemize}
+\item $16\cdot 5$ (lettura) per leggere SCENE;
+\item $16\cdot 5$ (scrittura) per scrivere SCENE in T2;
+\item $16 \cdot 2 \cdot 5$ (lettura) per eseguire la moltiplicazione (leggiamo entrambi gli operandi);
+\item $16\cdot 5$ (scrittura) per scrivere VIEW;
+\item $16\cdot 5$ (lettura) per leggere VIEW (si vuole copiarlo in M\_OUT);
+\item $16\cdot 5$ per per "'tentare'" di scrivere M\_OUT (in realtà si genera una \textit{miss} in scrittura).
+\end{itemize}
+TOTALE: 320 accessi in lettura, 240 accessi in scrittura, 560 accessi in totale.\\
+\textbf{Passiamo alle \textit{miss} per P1:}
+\begin{itemize}
+\item $1\cdot 5$ (lettura) per portare in memoria M\_IN;
+\item 16 (scrittura) per \textit{write-around} di T1 (solo prima volta, poi con la \textit{miss} in lettura lo portiamo dentro);
+\item 1 (lettura, \textit{compulsory}) per portare in memoria A;
+\item 1 (lettura, \textit{compulsory}) per portare in memoria T1;
+\item $16\cdot 5$ (scrittura) per \textit{write-around} di SCENE.
+\end{itemize}
+TOTALE: 7 \textit{miss} in lettura, 96 \textit{miss} in scrittura, 103 \textit{miss} in totale. \\
+\textbf{Infine elenchiamo le \textit{miss} per P2:}
+\begin{itemize}
+\item $1\cdot 5$ (lettura) per portare in memoria SCENE;
+\item 16 (scrittura) per \textit{write-around} di T2 (solo prima volta, poi con la \textit{miss} in lettura lo portiamo dentro);
+\item 1 (lettura, \textit{compulsory}) per portare in memoria T2;
+\item 1 (lettura, \textit{compulsory}) per portare in memoria B;
+\item 16 (scrittura) per \textit{write-around} di VIEW, scritto in seguito alla moltiplicazione (solo prima volta, poi con la \textit{miss} in lettura lo portiamo in \textit{cache});
+\item 1 (lettura, \textit{compulsory}) per portare in memoria VIEW;
+\item $16\cdot 5$ (scrittura) per \textit{write-around} di M\_OUT.
+\end{itemize}
+TOTALE: 8 \textit{miss} in lettura, 112 \textit{miss} in scrittura, 120 \textit{miss} in totale. \\
+
+La \textit{miss-rate} complessiva è dunque:
+\[
+\dfrac{103+120}{400+560}=23,2\%
+\]
+
+\subsection{\textit{Interrupt}}
+Si veda [32], in cui la risposta viene spiegata esaustivamente.
+
+\section{Compito del 23 marzo 2006}
+\label{sec:23mar06}
+
+Forti dell'esperienza maturata nei paragrafi \ref{sec:27mag04}, \ref{sec:21giu05} e \ref{sec:20mar08}, possiamo di quest'ultimo compito d'esame commentare solo le parti veramente diverse rispetto a quelli precedenti.
+Nulla di nuovo vi è infatti fino al quesito sui \textit{task}. Dopodiché le domande 5, 6 e 7 sono molto ben spiegate in [17-21], quindi in questa sede ne verrà tralasciata la trattazione.
+
+\subsection{\textit{Flow-chart} dei \textit{task}}
+Abbiamo cinque \textit{task} da definire: il primo dal quale partire è sicuramente INIT\_POI\_IDLE il quale:
+\begin{verbatim}
+1. Inizializza i flip-flop
+2. Chiama TS_1
+3. Chiama TS_2
+4. HALT (basso consumo energetico)
+\end{verbatim}
+
+TS1 e TS2 sono praticamente identici:
+\begin{verbatim}
+1. Call initiator (DMA) nel rispettivo canale
+2. IRET (intanto che il DMAC trasferisce perché non possiamo fare altro?)
+** ARRIVA L'EOP! Il DMAC ha finito la transazione. **
+3. Settiamo il flip-flop
+4. EOI, IRET
+\end{verbatim}
+
+Passiamo al task \textit{timer};
+\begin{verbatim}
+1. Controlliamo i flip-flop: sono entrambi attivi? 
+	1b. Se NO, EOI e IRET: il task deve rilasciare il controllo.
+2. Se sì, resettiamo i flip-flop e chiamiamo E.
+3. EOI, IRET
+\end{verbatim}
+
+Infine rimane E: questo \textit{task} deve effettuare la somma e poi richiamare i due \textit{task} per la ricezione (TS1 e TS2).
+\begin{verbatim}
+1. Somma M1 e M2
+2. Chiama TS1
+3. Chiama TS2
+4. EOI, IRET
+\end{verbatim}
+
+Vi sono due casi in cui sono presenti tre \textit{task busy}; per trovarli può essere interessante utilizzare il seguente metodo: si prova a simulare l'andamento dei processi nella CPU e si cerca di vedere quanti di loro riescono a percorrere contemporaneamente la \textit{flow-chart} nella parte precedente l'IRET.
+\begin{itemize}
+\item Nel primo caso ci sono INIT\_POI\_IDLE, TS\_1 e poi E (oppure INIT\_POI\_IDLE, TS\_2 e poi E, ma mai TS\_1 e TS\_2 contemporaneamente perché è strutturalmente impossibile). 
+Infatti INIT\_POI\_IDLE è sempre attivo, poi potrebbe essere \textit{busy} E in virtù del fatto che un \textit{interrupt} del clock ha fatto partire la somma e infine E, prima di segnalare l'IRET, potrebbe aver chiamato TS\_1 per far ripartire il processo di ricezione;
+\item nel secondo caso abbiamo una situazione simile alla precedente, ma il verificarsi di un \textit{interrupt} del \textit{timer} ci porta ad avere 4 \textit{task} contemporaneamente \textit{busy}. TS\_1 (o TS\_2) diventa \textit{ready} per far posto un attimo al \textit{timer}, il quale uscirà senza attivare E perché non è possibile che i due task TS\_1 e TS\_2 abbiano già settato il loro FF (altrimenti avremmo un \textit{fault} per rientro in E).
+\end{itemize}
+
+\subsection{Contenuto di IDT}
+
+Nella IDT vi sono tre \textit{entry} in virtù del fatto che sono possibili tre tipi di \textit{interrupt}:
+\begin{itemize}
+\item l'\textit{interrupt} del \textit{timer};
+\item quello di fine ricezione del messaggio per S\_1;
+\item quello di fine ricezione del messaggio per S\_2.
+\end{itemize}
+
+Per definire le\textit{ entry} basta andare sulle \textit{slide} a copiare la forma del descrittore di \textit{task gate} (vedi [12]): volendo, si può definire ogni \textit{entry} utilizzando l'assembler: praticamente quasi tutti i campi sono messi a 0, tranne gli 8 bit che nel descrittore stanno in posizione centrale. Siccome il livello di privilegio è pari a 0 per tutti, essi assumeranno il valore 85H (1000 0101).
+
+Nella parte inferiore della slide [12] sono elencati i tre descrittori (più il "'descrittore 0'") impostati col giusto ID (2, 3 e 4: li si tenga presente perché dopo quest'ordine andrà rispettato nella GDT).
+
+\subsection{Contenuto di GDT}
+
+Contiene i descrittore dei \textit{Task State Segment} per i cinque nostri possibili \textit{task}; inoltre, contiene i riferimenti alle LDT di questi ultimi (le quali conterranno i descrittori dei segmenti di codice, dati e \textit{stack} associati a ciascun \textit{task}).
+In [16] sono mostrati gli oggetti presenti: oltre al solito "'descrittore 0'" vi sono \textbf{rigorosamente nell'ordine} (vista la definizione in IDT) TSS\_E (ID = 1), TSS\_TIMER (ID = 2, come preventivato), TSS\_TS\_1 (ID = 3, idem), TSS\_TS\_2 (ID = 4, idem), etc\ldots
