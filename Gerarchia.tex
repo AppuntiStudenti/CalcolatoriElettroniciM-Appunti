@@ -370,7 +370,7 @@ Per coadiuvare e rendere possibile il processo di \textit{cache coherency}, nei 
 Come abbiamo visto nel paragrafo \ref{sec:cache}, ogni linea di \textit{cache} ha un campo per lo stato MESI: qui si andrà a mettere
 \begin{itemize}
 \item \textit{invalid} (I): se il dato è invalido. Ci troviamo in questo stato se qualcuno, in giro, ha una versione più aggiornata del dato rispetto a noi;
-\item \textit{shared} (S): se stiamo lavorando in politica di \textit{Write True}. Questo significa che il dato in \textit{cache} e quello in memoria sono perfettamente corrispondenti;
+\item \textit{shared} (S): se stiamo lavorando in politica di \textit{Write Through}. Questo significa che il dato in \textit{cache} e quello in memoria sono perfettamente corrispondenti;
 \item \textit{exclusive} (E): se stiamo lavorando in politica di \textit{Write Back}, tuttavia vi è corrispondenza fra quanto vi è in \textit{cache} e quanto vi è in memoria;
 \item \textit{modified} (M): se lavoriamo in politica di \textit{Write Back}, tuttavia solo la \textit{cache} possiede il dato aggiornato.
 \end{itemize}
@@ -396,7 +396,7 @@ Stiamo effettuando una LOAD: la CPU è \textit{master}. Come cambiano gli stati?
 \item siamo in stato I: ahia! Il nostro dato è vetusto! A questo punto ciò che accade dipende dalla politica adottata:
 \begin{itemize}
 \item lavoriamo in WB (WB/WT* = 1): con un ciclo di bus andiamo a reperire la versione aggiornata. Non è però detto che tutti ce l'abbiano: alcuni potrebbero rimandare il suo aggiornamento a quando sarà il loro turno di accedervi. Almeno noi però siamo a posto e mettiamo E;
-\item lavoriamo in WT (WB/WT* = 0): a questo punto si innesca il meccanismo che aggiorna il dato facendo sì che abbia lo stesso valore dappertutto. Una volta effettuato il ciclo per portare in \textit{cache} la versione aggiornata, passiamo in S (come vuole la modalità d'uso \textit{Write True}).
+\item lavoriamo in WT (WB/WT* = 0): a questo punto si innesca il meccanismo che aggiorna il dato facendo sì che abbia lo stesso valore dappertutto. Una volta effettuato il ciclo per portare in \textit{cache} la versione aggiornata, passiamo in S (come vuole la modalità d'uso \textit{Write Through}).
 \end{itemize}
 \end{itemize}
 
@@ -452,7 +452,7 @@ Quindi:
 \item siamo in stato S: fin'ora vi è corrispondenza fra la nostra \textit{cache} e la memoria (o le altre \textit{cache}),
 \begin{itemize}
 \item qualcuno sta leggendo quel dato (INV = 0): siccome l'età del suo dato è uguale a quello del nostro, passiamo in S perché condividiamo la stessa versione;
-\item qualcuno sta scrivendo quel dato (INV = 1): il nostro passerà di moda e metteremo una bella I; ci aspettiamo tuttavia un rapido e successivo aggiornamento del nostro dato per via della politica \textit{Write True}.
+\item qualcuno sta scrivendo quel dato (INV = 1): il nostro passerà di moda e metteremo una bella I; ci aspettiamo tuttavia un rapido e successivo aggiornamento del nostro dato per via della politica \textit{Write Through}.
 \end{itemize} 
 \item siamo in stato I: 
 \begin{itemize}
