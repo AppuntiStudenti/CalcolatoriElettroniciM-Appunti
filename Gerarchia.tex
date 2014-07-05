@@ -180,7 +180,7 @@ Come fanno la CPU e il sistema operativo a trovare un'opportuna zona in memoria 
 
 Inoltre, possiamo decidere una politica di scrittura in caso di \textit{hit} (dobbiamo aggiornare un dato che è presente nel nostro livello di memoria), a scelta fra:
 \begin{itemize}
-\item \textit{write true} (WT): se scriviamo in memoria fisica lo facciamo anche in memoria virtuale, così c'è sempre allineamento fra i due livelli. Il tempo di completamento della scrittura è pari al tempo di scrittura sulla memoria più lenta;
+\item \textit{write through} (WT): se scriviamo in memoria fisica lo facciamo anche in memoria virtuale, così c'è sempre allineamento fra i due livelli. Il tempo di completamento della scrittura è pari al tempo di scrittura sulla memoria più lenta;
 \item \textit{write back} (WB): scriviamo nel livello più vicino alla CPU (memoria fisica rispetto a memoria virtuale) e rimandiamo l'aggiornamento dei dati al momento della sostituzione). Il tempo di completamento della scrittura è pari al tempo di scrittura sulla memoria più vicina (la più veloce); il blocco contenente il dato appena
 aggiornato e quindi corretto viene detto \textit{modified} (se è una linea di \textit{cache}) o \textit{dirty} (se è una pagina in memoria centrale).
 \end{itemize}

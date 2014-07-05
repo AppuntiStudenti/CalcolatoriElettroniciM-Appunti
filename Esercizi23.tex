@@ -155,7 +155,7 @@ Si noti inoltre che i due dati hanno in comune i setID 00 e 01: A e B non posson
 L'evoluzione della \textit{cache} è la seguente:
 \begin{itemize}
 \item inizialmente è invalida (\textbf{I}) perché non contiene il dato;
-\item per effettuare l'operazione A = A or B la \textit{cache} ha bisogno di entrambi i vettori e, dopo una \textit{miss} obbligatoria, li carica nelle sue linee con stato MESI \textbf{E} (lo stato sarebbe invece \textbf{S} se lavorassimo con politica \textit{write true});
+\item per effettuare l'operazione A = A or B la \textit{cache} ha bisogno di entrambi i vettori e, dopo una \textit{miss} obbligatoria, li carica nelle sue linee con stato MESI \textbf{E} (lo stato sarebbe invece \textbf{S} se lavorassimo con politica \textit{write through});
 \item dovendo sovrascrivere A in \textit{cache} con il relativo valore aggiornato, pone il relativo stato MESI a \textbf{M};
 \item riceviamo nuovamente A in DMA ma, nel fare ciò, la CPU \textit{snoop}pa e si accorge che si vuole sovrascrivere tale vettore in memoria centrale: prima che ciò avvenga, la \textit{cache} passa il dato alla RAM e setta lo stato MESI a \textbf{I} (invalido);
 \item bisogna eseguire B = A and B, quindi bisogna ricaricare in \textit{cache} A. Lo stato MESI ripassa a \textbf{E};
