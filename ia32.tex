@@ -4,7 +4,7 @@
 \section{Bus e prime problematiche con la gerarchia delle memorie}
 \label{sec:busMemorie}
 
-Osserviamo la figura \ref{fig:strutturaInternaBus}; notiamo la presenza di due BUS principali, uno per la memoria (bus dati) e uno per le periferiche (IOB), separati da un \textit{bridge} fungente da ponte: si noti che essi hanno dimensione diversa (uno Ë a 64 bit, l'altro Ë a 8 bit). Ogni bus trasferisce una quantit‡ di informazioni pari alla propria capacit‡ ad ogni ciclo di clock, tuttavia non Ë detto che un singolo colpo di clock sia sufficiente per trasportare un intero dato. Prendiamo in considerazione le cosiddette "'linee di cache'"\footnote{Come nel caso delle memorie a livelli gerarchici superiori, anche la cache Ë suddivisa in blocchi di uguale dimensione. Nel caso delle cache questi blocchi sono detti \textit{linee di cache}. Nel Pentium e nel P6 (bus dati da 64 bit) la dimensione di ogni linea di cache Ë di 32 byte ed Ë identificabile dai 27 bit BA[31..5] (base) dell'indirizzo fisico costituito da 32 bit (27 bit base + 5 bit offset).}, unit‡ grandi 32 byte in cui quest'ultima memoria Ë suddivisa: dovendo essere trasportate dal bus dati, si necessiter‡ di quattro cicli di bus per completare un singolo trasferimento. 
+Osserviamo la figura \ref{fig:strutturaInternaBus}; notiamo la presenza di due BUS principali, uno per la memoria (bus dati) e uno per le periferiche (IOB), separati da un \textit{bridge} fungente da ponte: si noti che essi hanno dimensione diversa (uno √® a 64 bit, l'altro √® a 8 bit). Ogni bus trasferisce una quantit√† di informazioni pari alla propria capacit√† ad ogni ciclo di clock, tuttavia non √® detto che un singolo colpo di clock sia sufficiente per trasportare un intero dato. Prendiamo in considerazione le cosiddette "'linee di cache'"\footnote{Come nel caso delle memorie a livelli gerarchici superiori, anche la cache √® suddivisa in blocchi di uguale dimensione. Nel caso delle cache questi blocchi sono detti \textit{linee di cache}. Nel Pentium e nel P6 (bus dati da 64 bit) la dimensione di ogni linea di cache √® di 32 byte ed √® identificabile dai 27 bit BA[31..5] (base) dell'indirizzo fisico costituito da 32 bit (27 bit base + 5 bit offset).}, unit√† grandi 32 byte in cui quest'ultima memoria √® suddivisa: dovendo essere trasportate dal bus dati, si necessiter√† di quattro cicli di bus per completare un singolo trasferimento. 
 
 \begin{figure}[!h]
 \centering
@@ -13,7 +13,7 @@ Osserviamo la figura \ref{fig:strutturaInternaBus}; notiamo la presenza di due B
 \label{fig:strutturaInternaBus}
 \end{figure}
 
-Ogni ciclo di bus (dati), infatti, trasporta solo 8 dei 32 byte: da qui la necessit‡ di effettuare cicli di bus multipli e di un segnale \textit{ready} (vedi fig. \ref{fig:segnaleReady}) in grado di indicare quando un dato Ë pronto e completamente trasferito. Inoltre, il meccanismo di generazione del segnale di \textit{ready} deve farci rispettare correttamente le tempistiche d'accesso alla memoria: se disponiamo, ad esempio, di una memoria con tempo d'accesso 100 ns e di un processore di 1 GHz dovremo aspettare 100 clock prima di poter effettuare le nostre operazioni.
+Ogni ciclo di bus (dati), infatti, trasporta solo 8 dei 32 byte: da qui la necessit√† di effettuare cicli di bus multipli e di un segnale \textit{ready} (vedi fig. \ref{fig:segnaleReady}) in grado di indicare quando un dato √® pronto e completamente trasferito. Inoltre, il meccanismo di generazione del segnale di \textit{ready} deve farci rispettare correttamente le tempistiche d'accesso alla memoria: se disponiamo, ad esempio, di una memoria con tempo d'accesso 100 ns e di un processore di 1 GHz dovremo aspettare 100 clock prima di poter effettuare le nostre operazioni.
 
 \begin{figure}[!h]
 \centering
@@ -22,14 +22,14 @@ Ogni ciclo di bus (dati), infatti, trasporta solo 8 dei 32 byte: da qui la neces
 \label{fig:segnaleReady}
 \end{figure}
 
-Siamo quindi gi‡ arrivati a distinguere fra due diverse tipologie di cicli di bus:
+Siamo quindi gi√† arrivati a distinguere fra due diverse tipologie di cicli di bus:
 \begin{itemize}
 \item ciclo singolo: trasferiamo un unico dato;
-\item ciclo \textit{burst}: trasferiamo quattro dati invece che uno solo (anche statisticamente si Ë visto che Ë la scelta migliore).
+\item ciclo \textit{burst}: trasferiamo quattro dati invece che uno solo (anche statisticamente si √® visto che √® la scelta migliore).
 \end{itemize}
-Purtroppo andare a leggere una periferica Ë un'operazione lentissima e abbiamo tempi d'accesso esorbitanti (confrontati con quelli d'accesso alla \textit{cache}); se il bus Ë bloccante ne segue che l'intera macchina lo Ë: volendo tuttavia poter usufruire dell'algoritmo di Tomasulo, il quale ci permette di eseguire fuori ordine, dobbiamo permettere che la memoria e l'I/O possano rispondere in ritardo (\textit{split transaction cycle}).
+Purtroppo andare a leggere una periferica √® un'operazione lentissima e abbiamo tempi d'accesso esorbitanti (confrontati con quelli d'accesso alla \textit{cache}); se il bus √® bloccante ne segue che l'intera macchina lo √®: volendo tuttavia poter usufruire dell'algoritmo di Tomasulo, il quale ci permette di eseguire fuori ordine, dobbiamo permettere che la memoria e l'I/O possano rispondere in ritardo (\textit{split transaction cycle}).
 
-Inoltre, la CPU deve sapere a che ciclo di bus si riferisce un determinato dato: questo ci spinge ad inserire segnali di controllo e bit aggiuntivi. La cosa diventa ancora pi˘ complicata se abbiamo a che fare con sistemi \textit{multiprocessor}: dobbiamo infatti prevedere l'arbitraggio del bus, che Ë unico ed organizzato a mo' di \textit{pipeline} (cosicchÈ serve dell'\textit{hardware} particolare per ogni stadio della pipeline e ulteriori segnali aggiuntivi... Non ne usciamo pi˘!); infine possiamo avere in \textit{cache} delle copie di dati non consistenti (\textit{stail data}, dato presente in due memorie con valore diverso). Un analogo inconveniente puÚ presentarsi per diversit‡ dei dati fra la RAM e la \textit{cache} (problema di \textit{cache coherency}).
+Inoltre, la CPU deve sapere a che ciclo di bus si riferisce un determinato dato: questo ci spinge ad inserire segnali di controllo e bit aggiuntivi. La cosa diventa ancora pi√π complicata se abbiamo a che fare con sistemi \textit{multiprocessor}: dobbiamo infatti prevedere l'arbitraggio del bus, che √® unico ed organizzato a mo' di \textit{pipeline} (cosicch√© serve dell'\textit{hardware} particolare per ogni stadio della pipeline e ulteriori segnali aggiuntivi... Non ne usciamo pi√π!); infine possiamo avere in \textit{cache} delle copie di dati non consistenti (\textit{stail data}, dato presente in due memorie con valore diverso). Un analogo inconveniente pu√≤ presentarsi per diversit√† dei dati fra la RAM e la \textit{cache} (problema di \textit{cache coherency}).
 I componenti che si occupano di queste problematiche ed inoltre gestiscono le risorse, spegnendo la CPU in caso di emergenza o surriscaldamento, aumentando o riducendo la frequenza di \textit{clock}, etc\ldots sono i \textit{master} del bus (vedi fig. \ref{fig:busDintorni}.).
 
 \begin{figure}[!h]
@@ -39,12 +39,12 @@ I componenti che si occupano di queste problematiche ed inoltre gestiscono le ri
 \label{fig:busDintorni}
 \end{figure}
 
-Morale della favola: un sistema complesso deve gestire moltissime cose e deve essere in grado di rilevare le occorrenze proibite, evitando che vengano eseguite e segnalando il \textit{software} con opportuni \textit{interrupt}\footnote{Prevenire Ë meglio che curare (cit.): serve obbligatoriamente un'opportuna \textit{routine} di gestione degli interrupt.}.
+Morale della favola: un sistema complesso deve gestire moltissime cose e deve essere in grado di rilevare le occorrenze proibite, evitando che vengano eseguite e segnalando il \textit{software} con opportuni \textit{interrupt}\footnote{Prevenire √® meglio che curare (cit.): serve obbligatoriamente un'opportuna \textit{routine} di gestione degli interrupt.}.
 
 \section{IA32, protezione e gerarchia delle memorie}
 \label{sec:gerarchia_memorie}
 
-Osserviamo pi˘ da vicino al struttura del nostro processore Intel (vedi fig. \ref{fig:ia32}).
+Osserviamo pi√π da vicino al struttura del nostro processore Intel (vedi fig. \ref{fig:ia32}).
 
 \begin{figure}[!h]
 \centering
@@ -58,11 +58,11 @@ Qualche nota sui registri:
 \begin{itemize}
 \item ESP: \textit{Stack Pointer}. Si tratta dell'\textit{offset} nel registro di \textit{stack} dove siamo posizionati in un determinato momento;
 \item EDI/ESI: registri indice per i vettori (max. 4 GB);
-\item EIP: Ë l'\textit{Extended Instruction Pointer}, del quale presto scopriremo l'utilit‡;
-\item sei registri di segmento entro i quali si manifesta la protezione\footnote{Una CPU protetta Ë una CPU in grado di separare i \textit{task} in base agli utenti che li hanno avviati.} della CPU (vedi capitolo \ref{cha:protezione}): essi indicano la tipologia, le propriet‡, la dimensione e chi abbia il diritto d'accesso ad un certo segmento. Le CPU IA32 dispongono di sei registri di segmento: CS (\textit{code segment}: contiene il descrittore del blocco di codice in esecuzione), DS, ES, FS, GS ed SS (\textit{stack segment}: contiene il descrittore dello \textit{stack} in uso, v. paragrafo \ref{sec:controlliCPU}). La struttura di un registro di segmento Ë riportata in figura \ref{fig:regSegmento}.
+\item EIP: √® l'\textit{Extended Instruction Pointer}, del quale presto scopriremo l'utilit√†;
+\item sei registri di segmento entro i quali si manifesta la protezione\footnote{Una CPU protetta √® una CPU in grado di separare i \textit{task} in base agli utenti che li hanno avviati.} della CPU (vedi capitolo \ref{cha:protezione}): essi indicano la tipologia, le propriet√†, la dimensione e chi abbia il diritto d'accesso ad un certo segmento. Le CPU IA32 dispongono di sei registri di segmento: CS (\textit{code segment}: contiene il descrittore del blocco di codice in esecuzione), DS, ES, FS, GS ed SS (\textit{stack segment}: contiene il descrittore dello \textit{stack} in uso, v. paragrafo \ref{sec:controlliCPU}). La struttura di un registro di segmento √® riportata in figura \ref{fig:regSegmento}.
 \end{itemize}
 
-Come nell'8086\footnote{Nell'8086 il \textit{Program Counter} era la coppia CS\#0000 + IP e puntava alla memoria di un 1 MB. Il PC era ottenuto da segmento + offset e si trovava in CS, con indirizzo iniziale FFFF0. In IA32, come si legge poco oltre, troviamo il descrittore di segmento, con indirizzo iniziale FFFFFFF0.}, per poter accedere a un segmento Ë necessario chi il relativo descrittore (per capire meglio cosa siano i descrittori si veda il paragrafo \ref{sec:descrittori}) sia stato preventivamente caricato in un registro di segmento. In particolare, CS contiene il segmento di codice del programma che in quel momento sta usando un'eventuale istruzione.
+Come nell'8086\footnote{Nell'8086 il \textit{Program Counter} era la coppia CS\#0000 + IP e puntava alla memoria di un 1 MB. Il PC era ottenuto da segmento + offset e si trovava in CS, con indirizzo iniziale FFFF0. In IA32, come si legge poco oltre, troviamo il descrittore di segmento, con indirizzo iniziale FFFFFFF0.}, per poter accedere a un segmento √® necessario chi il relativo descrittore (per capire meglio cosa siano i descrittori si veda il paragrafo \ref{sec:descrittori}) sia stato preventivamente caricato in un registro di segmento. In particolare, CS contiene il segmento di codice del programma che in quel momento sta usando un'eventuale istruzione.
 
 \begin{figure}[!h]
 \centering
@@ -71,7 +71,7 @@ Come nell'8086\footnote{Nell'8086 il \textit{Program Counter} era la coppia CS\#
 \label{fig:regSegmento}
 \end{figure}
 
-Nell'8086 ogni task ha 4 GB di memoria virtuale interamente dedicati a lui e sussistono sempre, anche se il quantitativo di RAM che ho nel sistema Ë molto inferiore: grazie a questo ingegnoso \textit{escamotage} siamo in grado di svincolare la dimensione del programma da quella della memoria fisica.
+Nell'8086 ogni task ha 4 GB di memoria virtuale interamente dedicati a lui e sussistono sempre, anche se il quantitativo di RAM che ho nel sistema √® molto inferiore: grazie a questo ingegnoso \textit{escamotage} siamo in grado di svincolare la dimensione del programma da quella della memoria fisica.
 
 \begin{figure}[!h]
 \centering
@@ -80,7 +80,7 @@ Nell'8086 ogni task ha 4 GB di memoria virtuale interamente dedicati a lui e sus
 \label{fig:slideSacra}
 \end{figure}
 
-A titolo informativo, mentre lo spazio dei segmenti e la \textit{cache} sono organizzati come matrici bidimensionali (a 2 coordinate), la memoria virtuale Ë lineare (1 coordinata).
+A titolo informativo, mentre lo spazio dei segmenti e la \textit{cache} sono organizzati come matrici bidimensionali (a 2 coordinate), la memoria virtuale √® lineare (1 coordinata).
 
 Vediamo ora qualche esempio di codice in linguaggio macchina (NOTA: nei compiti segmento di codice, di dati e di \textit{stack} costituiscono un trinomio obbligatorio da definire!). \\
 Segmento di \textbf{codice}:
@@ -92,7 +92,7 @@ Entry point: MOV DS, SEG_DATI
              MOV EDI, 0 (mette a 0 EDI)
              MOV DS: BETA(EDI), EBX
              PUSH ...
-             CALL ... (servir‡ supporto per il nesting!)
+             CALL ... (servir√† supporto per il nesting!)
 \end{verbatim}
 Segmento \textbf{dati}:
 \begin{verbatim}
@@ -112,9 +112,9 @@ STK_SEGMENT <..., ...>
 
 Notiamo che:
 \begin{itemize}
-\item la variabile ALFA Ë individuata dall'indirizzo logico <SEG\_DATI, 0>;
-\item la variabile BETA(0) Ë individuata all'indirizzo logico <SEG\_DATI, 1>;
-\item la variabile BETA(1) Ë individuata all'indirizzo logico <SEG\_DATI, 5>. Il 5 Ë stato calcolato ricordando che ogni elemento della struttura dati BETA Ë una \textit{double word} (4 byte);
+\item la variabile ALFA √® individuata dall'indirizzo logico <SEG\_DATI, 0>;
+\item la variabile BETA(0) √® individuata all'indirizzo logico <SEG\_DATI, 1>;
+\item la variabile BETA(1) √® individuata all'indirizzo logico <SEG\_DATI, 5>. Il 5 √® stato calcolato ricordando che ogni elemento della struttura dati BETA √® una \textit{double word} (4 byte);
 \item gli indirizzi 8000H, 8001H, etc\ldots non sono indirizzi logici ma indirizzi nello spazio virtuale.
 \end{itemize}
 
@@ -125,13 +125,13 @@ Notiamo che:
 \label{fig:pipelineIndirizzi}
 \end{figure}
 
-La pipeline come pensata in figura Ë in grado di funzionare su macchine M-R (come quelle Intel) e di effettuare la traduzione fra indirizzo logico e indirizzo virtuale. Ad esempio, ALFA ha indirizzo logico\footnote{Il programmatore (e i compilatori) vedono uno spazio di indirizzamento segmentato, il che significa che ogni istruzione e ogni dato vengono localizzati attraverso una coppia di coordinate: il segmento di appartenenza e la posizione (offset) all'interno del segmento (come in IA16); l'offset nel segmento puÚ essere determinato dal compilatore (es. etichetta o variabile) oppure calcolato a \textit{runtime} (es. indirizzamento tramite registro base e registro indice).
-} <SEG\_DATI, 0> ma indirizzo virtuale 8000H (+ offset pari a 0) calcolato facendo l'usuale operazione di somma base\footnote{DS concatenato con 4 zeri nell'8086; nell'IA32 Ë l'indirizzo virtuale calcolato nello stadio di AG, all'interno del quale Ë necessariamente utile avere i registri di segmento.} + offset.
+La pipeline come pensata in figura √® in grado di funzionare su macchine M-R (come quelle Intel) e di effettuare la traduzione fra indirizzo logico e indirizzo virtuale. Ad esempio, ALFA ha indirizzo logico\footnote{Il programmatore (e i compilatori) vedono uno spazio di indirizzamento segmentato, il che significa che ogni istruzione e ogni dato vengono localizzati attraverso una coppia di coordinate: il segmento di appartenenza e la posizione (offset) all'interno del segmento (come in IA16); l'offset nel segmento pu√≤ essere determinato dal compilatore (es. etichetta o variabile) oppure calcolato a \textit{runtime} (es. indirizzamento tramite registro base e registro indice).
+} <SEG\_DATI, 0> ma indirizzo virtuale 8000H (+ offset pari a 0) calcolato facendo l'usuale operazione di somma base\footnote{DS concatenato con 4 zeri nell'8086; nell'IA32 √® l'indirizzo virtuale calcolato nello stadio di AG, all'interno del quale √® necessariamente utile avere i registri di segmento.} + offset.
 
 \subsection{I \textit{Page Fault} e il reperimento dei blocchi}
 \label{sec:pageFault}
 
-Ogni volta che si esegue un \textit{task} Ë come se esistesse un file, all'interno dell'hard disk e grande 4 GB (ma magari "'scritto'" anche solo in pochi KB), che viene portato in memoria fisica (RAM): siccome la dimensione della RAM puÚ essere anche molto inferiore a 4 GB, tale file viene smembrato in blocchi tutti uguali (pagine) di dimensione 4 KB. Se in memoria fisica viene ricercata una pagina che non c'Ë, allora si genera un \textit{page fault}, al quale si risponde caricando i dati cercati da memoria virtuale a memoria fisica.
+Ogni volta che si esegue un \textit{task} √® come se esistesse un file, all'interno dell'hard disk e grande 4 GB (ma magari "'scritto'" anche solo in pochi KB), che viene portato in memoria fisica (RAM): siccome la dimensione della RAM pu√≤ essere anche molto inferiore a 4 GB, tale file viene smembrato in blocchi tutti uguali (pagine) di dimensione 4 KB. Se in memoria fisica viene ricercata una pagina che non c'√®, allora si genera un \textit{page fault}, al quale si risponde caricando i dati cercati da memoria virtuale a memoria fisica.
 La CPU, quando deve cercare qualcosa nella \textit{cache}, controlla i primi 27 bit dell'indirizzo fisico\footnote{Si ricorda che 27 dei 32 bit rappresentano la base e i 5 rimanenti l'offset.}.
 
 \begin{figure}[!h]
@@ -142,7 +142,7 @@ La CPU, quando deve cercare qualcosa nella \textit{cache}, controlla i primi 27 
 \end{figure}
 
 La traduzione degli indirizzi (vedi fig. \ref{fig:hdrc}) avviene attraverso tabella associativa (passaggio indicato col numero 1, IF-IC) oppure attraverso un \textit{Translation Look-Aside Buffer} (passaggio 2, IV-IF).
-L'assenza di una pagina in memoria puÚ avvenire ad ogni livello:
+L'assenza di una pagina in memoria pu√≤ avvenire ad ogni livello:
 \begin{itemize}
 \item \textit{page fault} (tra IV e IF);
 \item \textit{miss} (tra IF e IC);
@@ -151,25 +151,25 @@ L'assenza di una pagina in memoria puÚ avvenire ad ogni livello:
 Ovviamente l'architettura che gestisce tutte queste tipologie di \textit{miss} dev'essere adeguatamente veloce e deve sussistere una collaborazione HW-SW per gestire:
 \begin{enumerate}
 \item i \textit{cicli burst} per portare i dati in \textit{cache};
-\item l'allocazione delle pagine in memoria centrale, attivit‡ della quale si occupa in genere il sistema operativo;
+\item l'allocazione delle pagine in memoria centrale, attivit√† della quale si occupa in genere il sistema operativo;
 \item il reperimento delle informazioni non ancora presenti in memoria virtuale (\textit{segment non present fault});
 \item il controllo sugli accessi in memoria (protezione);
 \item la definizione di processi e delle risorse di memoria ad essi associati;
 \item la separazione tra processi (protezione);
 \item la commutazione tra un processo e l'altro (\textit{task switching});
-\item le tecniche d'accesso all'hard disk, che Ë risaputamente un collo di bottiglia per le prestazioni.
+\item le tecniche d'accesso all'hard disk, che √® risaputamente un collo di bottiglia per le prestazioni.
 \end{enumerate}
-Tutto ciÚ (soprattutto i punti 1, 2, 3 e 8) Ë causa una gran mole di \textit{overhead}, ma fortunatamente il numero di \textit{miss} non Ë cosÏ grande grazie al principio di localit‡.
+Tutto ci√≤ (soprattutto i punti 1, 2, 3 e 8) √® causa una gran mole di \textit{overhead}, ma fortunatamente il numero di \textit{miss} non √® cos√¨ grande grazie al principio di localit√†.
 
 \section{Descrittori di segmento}
 \label{sec:descrittori}
 
 Tutto quello che abbiamo detto sta in piedi se disponiamo di alcune informazioni importanti:
 \begin{itemize}
-\item a che livello Ë mappato il blocco di dati?
+\item a che livello √® mappato il blocco di dati?
 \item a che indirizzo?
-\item quanto Ë grande?
-\item Ë presente o devo trasferirlo?
+\item quanto √® grande?
+\item √® presente o devo trasferirlo?
 \end{itemize}
 Tutti questi particolari sono ben annotati nei cosiddetti \textit{descrittori}. Nell'architettura IA32 i descrittori hanno una struttura come indicato in figura \ref{fig:descrittoreGenerico}.
 
@@ -180,14 +180,14 @@ Tutti questi particolari sono ben annotati nei cosiddetti \textit{descrittori}. 
 \label{fig:descrittoreGenerico}
 \end{figure}
 
-Ad ogni segmento Ë associato un descrittore di 8 byte contenente tutti gli attributi del segmento (indirizzo di origine, lunghezza del segmento, diritti di accesso, tipo, etc\ldots). Per accedere a un oggetto in memoria Ë necessario conoscere il segmento di appartenenza; il relativo selettore deve essere caricato in un registro di segmento i quali sono sei\footnote{Quindi in ogni istante il programma ha la visibilit‡ di non pi˘ di sei segmenti.}.
+Ad ogni segmento √® associato un descrittore di 8 byte contenente tutti gli attributi del segmento (indirizzo di origine, lunghezza del segmento, diritti di accesso, tipo, etc\ldots). Per accedere a un oggetto in memoria √® necessario conoscere il segmento di appartenenza; il relativo selettore deve essere caricato in un registro di segmento i quali sono sei\footnote{Quindi in ogni istante il programma ha la visibilit√† di non pi√π di sei segmenti.}.
 
-In IA32 la dimensione massima di un segmento Ë 4 GB; all'interno del descrittore sono contenute le informazioni necessarie per verificare se un accesso al segmento Ë lecito e in tal caso indica dove il segmento si trova.
-Il linguaggio macchina delle CPU da 32 bit Ë un'estensione di quello dei processori 8086/88: cosÏ come questi due ultimi processori avevano una memoria segmentata, cosÏ anche per l'architettura a 32 bit ad ogni segmento Ë associato un \textit{descrittore di segmento} (vedi fig. \ref{fig:descrittoreSegDati}). Il descrittore va caricato in un registro di segmento, cosÏ come andava caricato in DS l'indirizzo iniziale del segmento in IA16\footnote{Data l'istruzione \textit{assembler} (ALFA Ë l'offset):\\
+In IA32 la dimensione massima di un segmento √® 4 GB; all'interno del descrittore sono contenute le informazioni necessarie per verificare se un accesso al segmento √® lecito e in tal caso indica dove il segmento si trova.
+Il linguaggio macchina delle CPU da 32 bit √® un'estensione di quello dei processori 8086/88: cos√¨ come questi due ultimi processori avevano una memoria segmentata, cos√¨ anche per l'architettura a 32 bit ad ogni segmento √® associato un \textit{descrittore di segmento} (vedi fig. \ref{fig:descrittoreSegDati}). Il descrittore va caricato in un registro di segmento, cos√¨ come andava caricato in DS l'indirizzo iniziale del segmento in IA16\footnote{Data l'istruzione \textit{assembler} (ALFA √® l'offset):\\
 \texttt{MOV AL, ES:[ebx + edi].ALFA }\\
-L'indirizzo virtuale Ë calcolato cosÏ:\\
+L'indirizzo virtuale √® calcolato cos√¨:\\
 \texttt{IV = ES.base\_seg + EBX + EDI + ALFA}\\
-In generale, l'indirizzo virtuale (o lineare) di un operando in memoria in IA32 Ë infatti:\\
+In generale, l'indirizzo virtuale (o lineare) di un operando in memoria in IA32 √® infatti:\\
 \texttt{IV = seg\_reg.base\_seg + EA}}.
 
 \begin{figure}[!h]
@@ -216,7 +216,7 @@ Descriptor Table} o LDT).
 \end{itemize}
 }
 
-I descrittori sono radunati in apposite tabelle dette \textit{tabelle dei descrittori} (\textit{Global Descriptor Table}, GDT, \textit{Local Descriptor Table}, LDT), come illustrato in figura \ref{fig:sedeDescrittori}. » possibile accedere a un descrittore attraverso una chiave di accesso di 16 bit (detta selettore, la cui struttura Ë riportata in figura \ref{fig:strutturaSelettori}) contenente sia l'identificatore della tabella (GDT o LDT) sia l'indice del descrittore nella tabella (13 bit). Entrambe le tabelle contengono al massimo 8192 elementi di 8 byte.
+I descrittori sono radunati in apposite tabelle dette \textit{tabelle dei descrittori} (\textit{Global Descriptor Table}, GDT, \textit{Local Descriptor Table}, LDT), come illustrato in figura \ref{fig:sedeDescrittori}. √à possibile accedere a un descrittore attraverso una chiave di accesso di 16 bit (detta selettore, la cui struttura √® riportata in figura \ref{fig:strutturaSelettori}) contenente sia l'identificatore della tabella (GDT o LDT) sia l'indice del descrittore nella tabella (13 bit). Entrambe le tabelle contengono al massimo 8192 elementi di 8 byte.
 
 \begin{figure}[!h]
 \centering
@@ -232,7 +232,7 @@ I descrittori sono radunati in apposite tabelle dette \textit{tabelle dei descri
 \label{fig:strutturaSelettori}
 \end{figure}
 
-I descrittori sono parecchi: ve n'Ë un tipo per i segmenti di dati, uno per i segmenti di codice, uno per i \textit{task}, etc\ldots Per questo esiste anche un identificatore del tipo di descrittore: esso consta di 5 bit, dei quali solo 4 vengono in realt‡ usati (il primo Ë fisso ad 1), per un totale di 16 possibili oggetti all'interno della CPU.
+I descrittori sono parecchi: ve n'√® un tipo per i segmenti di dati, uno per i segmenti di codice, uno per i \textit{task}, etc\ldots Per questo esiste anche un identificatore del tipo di descrittore: esso consta di 5 bit, dei quali solo 4 vengono in realt√† usati (il primo √® fisso ad 1), per un totale di 16 possibili oggetti all'interno della CPU.
 
 \subsection{Descrittore di dato}
 \label{sec:descrittoreDato}
@@ -246,17 +246,17 @@ I descrittori sono parecchi: ve n'Ë un tipo per i segmenti di dati, uno per i se
 
 In questo descrittore (vedi fig. \ref{fig:segDati}):
 \begin{itemize}
-\item DPL Ë il livello di privilegio del segmento associato al descrittore (\textit{Descriptor privilege level});
-\item il bit pi˘ significativo del campo "'tipo descrittore'" discrimina tra segmenti di dato e segmenti di codice;
-\item il bit A (\textit{Accessed}) Ë resettabile dal software e viene settato automaticamente ogni volta che viene fatto un accesso al segmento (cioË ogni volta che il descrittore viene caricato su un registro di segmento);
-\item il bit E (\textit{ExpandDown}) definisce un segmento dati per il quale il limite Ë l'indirizzo pi˘ basso del segmento (segmento di \textit{stack} che cresce verso indirizzi decrescenti);
-\item la base del segmento (per esempio l'indirizzo iniziale del segmento in uno spazio di indirizzamento lineare di 4GB) Ë memorizzato nei byte 2, 3, 4, 7 (vedi fig. \ref{fig:descrittoreGenerico}). Lo spazio di indirizzamento lineare puÚ essere la memoria fisica o la memoria virtuale;
-\item il limite del segmento Ë un campo di 20 bit memorizzato nei byte 0 e 1 e nei bit [0..3] del byte 6 (vedi fig. \ref{fig:descrittoreGenerico}); nei segmenti di codice e nei segmenti dati con E = 0 l'indirizzo base + limite Ë l'indirizzo lineare pi˘ alto del segmento associato al descrittore. Nei segmenti dati con E = 1, invece, sono vietati tutti gli accessi a indirizzi compresi tra base e base + limite;
-\item anche se il campo limite Ë di 20 bit, la dimensione massima di un segmento non Ë limitata a un MB, ma puÚ essere anche di 4 GB, infatti l'unit‡ di misura di questo campo puÚ essere il byte o la pagina di 4 KB; chi definisce l'unit‡ di misura Ë il bit G (\textit{granularity});
-\item bit G (\textit{Granularity}): se G = 0, il limite Ë espresso in byte; se G = 1 il limite Ë espresso in pagine di 4KB;
-\item il bit B riguarda la gestione dei segmenti di \textit{stack}: se B = 1 lo \textit{stackpointer} Ë di 32 bit (ESP) e l'offset massimo Ë 0F FFFF FFFH, altrimenti lo \textit{stackpointer} Ë di 16 bit (SP) e l'offset massimo Ë 0F FFFH;
-\item il bit AVL Ë un bit disponibile (\textit{available}) a chi scrive il sistema operativo;
-\item il bit P (\textit{Present}, vedi fig. \ref{fig:regSegmento}, nella \ref{fig:segDati} Ë ad 1) indica se il segmento Ë mappato nel livello adiacente della gerarchia delle memorie (cioË se Ë mappato in memoria virtuale).
+\item DPL √® il livello di privilegio del segmento associato al descrittore (\textit{Descriptor privilege level});
+\item il bit pi√π significativo del campo "'tipo descrittore'" discrimina tra segmenti di dato e segmenti di codice;
+\item il bit A (\textit{Accessed}) √® resettabile dal software e viene settato automaticamente ogni volta che viene fatto un accesso al segmento (cio√® ogni volta che il descrittore viene caricato su un registro di segmento);
+\item il bit E (\textit{ExpandDown}) definisce un segmento dati per il quale il limite √® l'indirizzo pi√π basso del segmento (segmento di \textit{stack} che cresce verso indirizzi decrescenti);
+\item la base del segmento (per esempio l'indirizzo iniziale del segmento in uno spazio di indirizzamento lineare di 4GB) √® memorizzato nei byte 2, 3, 4, 7 (vedi fig. \ref{fig:descrittoreGenerico}). Lo spazio di indirizzamento lineare pu√≤ essere la memoria fisica o la memoria virtuale;
+\item il limite del segmento √® un campo di 20 bit memorizzato nei byte 0 e 1 e nei bit [0..3] del byte 6 (vedi fig. \ref{fig:descrittoreGenerico}); nei segmenti di codice e nei segmenti dati con E = 0 l'indirizzo base + limite √® l'indirizzo lineare pi√π alto del segmento associato al descrittore. Nei segmenti dati con E = 1, invece, sono vietati tutti gli accessi a indirizzi compresi tra base e base + limite;
+\item anche se il campo limite √® di 20 bit, la dimensione massima di un segmento non √® limitata a un MB, ma pu√≤ essere anche di 4 GB, infatti l'unit√† di misura di questo campo pu√≤ essere il byte o la pagina di 4 KB; chi definisce l'unit√† di misura √® il bit G (\textit{granularity});
+\item bit G (\textit{Granularity}): se G = 0, il limite √® espresso in byte; se G = 1 il limite √® espresso in pagine di 4KB;
+\item il bit B riguarda la gestione dei segmenti di \textit{stack}: se B = 1 lo \textit{stackpointer} √® di 32 bit (ESP) e l'offset massimo √® 0F FFFF FFFH, altrimenti lo \textit{stackpointer} √® di 16 bit (SP) e l'offset massimo √® 0F FFFH;
+\item il bit AVL √® un bit disponibile (\textit{available}) a chi scrive il sistema operativo;
+\item il bit P (\textit{Present}, vedi fig. \ref{fig:regSegmento}, nella \ref{fig:segDati} √® ad 1) indica se il segmento √® mappato nel livello adiacente della gerarchia delle memorie (cio√® se √® mappato in memoria virtuale).
 \end{itemize}
 
 
@@ -271,13 +271,13 @@ In questo descrittore (vedi fig. \ref{fig:segDati}):
 \end{figure}
 Oltre ad alcuni attributi illustrati nel paragrafo \ref{sec:descrittoreDato}, abbiamo (vedi fig. \ref{fig:segCodice}).
 \begin{itemize}
-\item il bit W (\textit{Writable}) stabilisce se un segmento dati Ë di tipo \textit{Read/Write} o \textit{Read Only};
-\item bit D nei segmenti di codice vale 1 se il codice Ë scritto nel linguaggio macchina della IA-32, mentre vale 0 se si tratta di codice macchina del processore 8086 (in particolare operandi e offset di 16 bit);
-\item il bit R (\textit{Readable}) stabilisce se un segmento di codice Ë di tipo \textit{Execute/Read} o \textit{Execute Only}, cioË se contiene anche dati o Ë solo eseguibile;
-\item il bit C (\textit{Conforming}) di un segmento di codice indica che il livello di privilegio a cui il segmento viene fatto eseguire Ë quello del codice che ha messo in esecuzione il segmento stesso (il segmento cioË eredita il livello di privilegio del codice chiamante).
+\item il bit W (\textit{Writable}) stabilisce se un segmento dati √® di tipo \textit{Read/Write} o \textit{Read Only};
+\item bit D nei segmenti di codice vale 1 se il codice √® scritto nel linguaggio macchina della IA-32, mentre vale 0 se si tratta di codice macchina del processore 8086 (in particolare operandi e offset di 16 bit);
+\item il bit R (\textit{Readable}) stabilisce se un segmento di codice √® di tipo \textit{Execute/Read} o \textit{Execute Only}, cio√® se contiene anche dati o √® solo eseguibile;
+\item il bit C (\textit{Conforming}) di un segmento di codice indica che il livello di privilegio a cui il segmento viene fatto eseguire √® quello del codice che ha messo in esecuzione il segmento stesso (il segmento cio√® eredita il livello di privilegio del codice chiamante).
 \end{itemize}
 
-Si ricorda che il descrittore di codice corrente Ë contenuto nel registro CS del nostro microprocessore.
+Si ricorda che il descrittore di codice corrente √® contenuto nel registro CS del nostro microprocessore.
 
 \section{Politiche d'avvio e descrittori}
 \label{sec:avvioDescrittori}
@@ -289,15 +289,15 @@ Si ricorda che il descrittore di codice corrente Ë contenuto nel registro CS del
 \label{fig:PGeRegistri}
 \end{figure}
 
-La memoria, all'accensione della macchina, deve partire con i descrittori (e relative tabelle) gi‡ pronti: a tal proposito, le tabelle vanno portate nella memoria (vergine) non appena viene fatto partire il nostro dispositivo. Mentre perÚ viene effettuato lo \textit{start-up}, la CPU si comporta come un 8088 (che non aveva i descrittori e quindi puÚ benissimo funzionare senza!) e fa uso di un registro (CR0, vedi figura \ref{fig:PGeRegistri}) che si occupa di gestire il transitorio in cui non si ha alcuna tabella. Il bit PE (\textit{Protection Enable}) Ë pari a 0 durante tutta la transizione e va ad 1 quando finalmente tutto Ë pronto per funzionare a regime\footnote{Se PG=0 la memoria virtuale Ë disabilitata quindi l'indirizzo si riferisce alla memoria fisica. Se PG=1 la memoria virtuale Ë abilitata e gli indirizzi fanno riferimento alla memoria virtuale (in particolare il registro BASE SEG).}.
+La memoria, all'accensione della macchina, deve partire con i descrittori (e relative tabelle) gi√† pronti: a tal proposito, le tabelle vanno portate nella memoria (vergine) non appena viene fatto partire il nostro dispositivo. Mentre per√≤ viene effettuato lo \textit{start-up}, la CPU si comporta come un 8088 (che non aveva i descrittori e quindi pu√≤ benissimo funzionare senza!) e fa uso di un registro (CR0, vedi figura \ref{fig:PGeRegistri}) che si occupa di gestire il transitorio in cui non si ha alcuna tabella. Il bit PE (\textit{Protection Enable}) √® pari a 0 durante tutta la transizione e va ad 1 quando finalmente tutto √® pronto per funzionare a regime\footnote{Se PG=0 la memoria virtuale √® disabilitata quindi l'indirizzo si riferisce alla memoria fisica. Se PG=1 la memoria virtuale √® abilitata e gli indirizzi fanno riferimento alla memoria virtuale (in particolare il registro BASE SEG).}.
 
-Mentre la CPU si accende, la \textit{cache} Ë disabilitata (CB=1) e anche l'impaginazione (PG=0) lo Ë: ufficialmente, sotto quest'ultimo punto di vista, tutto funziona come nell'IA16.
+Mentre la CPU si accende, la \textit{cache} √® disabilitata (CB=1) e anche l'impaginazione (PG=0) lo √®: ufficialmente, sotto quest'ultimo punto di vista, tutto funziona come nell'IA16.
 Abilitata \textit{cache} e impaginazione, dispongo della gerarchia completa delle memorie.
 
 \section{Ciclo IDLE e considerazioni sui consumi}
 \label{sec:idleConsumi}
 
-Il ciclo \textit{idle} (vedi fig. \ref{fig:halt}) Ë attivo quando la CPU ha ben poco da fare: durante il suo svolgimento, la CPU va in HALT per cercare di spegnere quasi tutto e - di conseguenza - di consumare il meno possibile. I consumi di un moderno elaboratore possono infatti essere suddivisi in tre parti, pi˘ o meno equivalenti come dispendio:
+Il ciclo \textit{idle} (vedi fig. \ref{fig:halt}) √® attivo quando la CPU ha ben poco da fare: durante il suo svolgimento, la CPU va in HALT per cercare di spegnere quasi tutto e - di conseguenza - di consumare il meno possibile. I consumi di un moderno elaboratore possono infatti essere suddivisi in tre parti, pi√π o meno equivalenti come dispendio:
 \begin{itemize}
 \item la CPU;
 \item le periferiche (HD, monitor, etc\ldots);
@@ -311,12 +311,12 @@ Il ciclo \textit{idle} (vedi fig. \ref{fig:halt}) Ë attivo quando la CPU ha ben 
 \label{fig:halt}
 \end{figure}
 
-Spegnendo la CPU abbatto i consumi di 1/3; altri accorgimenti per il risparmio dell'energia possono essere l'utilizzo della modalit‡ \textit{standby}, lo spegnimento dell'\textit{hard-disk}, l'inibizione \textit{totale} del clock alla CPU o, infine, la riduzione della frequenza di funzionamento o della tensione\footnote{Servir‡ ovviamente un sistema di monitoraggio per decidere come modulare questi due parametri in base alla situazione.} in virt˘ della relazione
+Spegnendo la CPU abbatto i consumi di 1/3; altri accorgimenti per il risparmio dell'energia possono essere l'utilizzo della modalit√† \textit{standby}, lo spegnimento dell'\textit{hard-disk}, l'inibizione \textit{totale} del clock alla CPU o, infine, la riduzione della frequenza di funzionamento o della tensione\footnote{Servir√† ovviamente un sistema di monitoraggio per decidere come modulare questi due parametri in base alla situazione.} in virt√π della relazione
 \[
 P=KV^2f
 \]
-(con $K$ costante di proporzionalit‡, $V$ tensione e $f$ frequenza).
+(con $K$ costante di proporzionalit√†, $V$ tensione e $f$ frequenza).
 
-Ebbene, quando la CPU Ë in HALT viene generato un apposito ciclo di bus (che viene visto anche dal bridge) e che fa partire un \textit{timer} il quale, allo scadere, priva la CPU del clock.
-Se togliamo anche l'alimentazione, la CPU passa in modalit‡ \textit{deep sleep} (sonno profondo), in cui Ë il bridge a gestire gli \textit{interrupt}: il risveglio sar‡ lentissimo, ma almeno avremo risparmiato moltissima energia.
+Ebbene, quando la CPU √® in HALT viene generato un apposito ciclo di bus (che viene visto anche dal bridge) e che fa partire un \textit{timer} il quale, allo scadere, priva la CPU del clock.
+Se togliamo anche l'alimentazione, la CPU passa in modalit√† \textit{deep sleep} (sonno profondo), in cui √® il bridge a gestire gli \textit{interrupt}: il risveglio sar√† lentissimo, ma almeno avremo risparmiato moltissima energia.
 

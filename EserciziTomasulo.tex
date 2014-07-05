@@ -6,10 +6,10 @@ In questo capitolo esporremo qualche consiglio per la risoluzione del tipico ese
 \section{Dinamica dell'esecuzione}
 \label{sec:dinamicaTomasulo}
 
-Grazie all'approccio di Tomasulo Ë possibile risolvere tutti i problemi relativi alle alee. Fortunatamente, visto l'algoritmo stesso e la struttura del DLX, dobbiamo preoccuparci solo delle alee RAW. 
+Grazie all'approccio di Tomasulo √® possibile risolvere tutti i problemi relativi alle alee. Fortunatamente, visto l'algoritmo stesso e la struttura del DLX, dobbiamo preoccuparci solo delle alee RAW. 
 Prendiamo, come esempio, il seguente esercizio:\\
 
-\textsf{Un DLX con Tck = T dispone di tre unit‡ funzionali multiciclo, A, B e C, capaci di eseguire le seguenti istruzioni su operandi in virgola mobile:}
+\textsf{Un DLX con Tck = T dispone di tre unit√† funzionali multiciclo, A, B e C, capaci di eseguire le seguenti istruzioni su operandi in virgola mobile:}
 \begin{verbatim}
 FDIV F1, F2, F3
 FADD F7, F1, F4
@@ -18,50 +18,50 @@ FADD F5, F1, F6
 FADD F1, F3, F4
 FMUL F8, F9, F10
 \end{verbatim}
-\textsf{I tempi di esecuzione di ciascuna unit‡ funzionale sono di 2T per le FADD, 3T per le FMUL, 5T per le FDIV.}
+\textsf{I tempi di esecuzione di ciascuna unit√† funzionale sono di 2T per le FADD, 3T per le FMUL, 5T per le FDIV.}
 
-Mostriamo ora la dinamica dell'esecuzione nel caso di 2 \textit{reservation station} per unit‡ funzionale (si faccia riferimento alla figura \ref{fig:tomasEs1}.
+Mostriamo ora la dinamica dell'esecuzione nel caso di 2 \textit{reservation station} per unit√† funzionale (si faccia riferimento alla figura \ref{fig:tomasEs1}.
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\columnwidth]{img/tomasEs1}
-\caption{Dinamica dell'esecuzione nel caso di 2 \textit{reservation station} per unit‡ funzionale.}
+\caption{Dinamica dell'esecuzione nel caso di 2 \textit{reservation station} per unit√† funzionale.}
 \label{fig:tomasEs1}
 \end{figure}
 Indichiamo:
 \begin{itemize}
 \item con IF la fase di \textit{fetch};
 \item con ID la fase di \textit{decode};
-\item con le terne YXZ la \textit{reservation station} di indice X riservata all'operazione di ADD (Y = A), MUL (Y = B), DIV (Y = C), mentre siamo in attesa dell'operando (Z = W = WAIT), oppure quando l'operando Ë pronto ma non possiamo calcolare perchÈ siamo privati dell'unit‡ funzionale (Z = R = READY) o infine mentre stiamo effettuando la nostra operazione (Z = E = EXECUTE). Ad esempio: A0E = \textit{reservation station} 0 riservata alla ADD, stiamo calcolando la somma (E);
+\item con le terne YXZ la \textit{reservation station} di indice X riservata all'operazione di ADD (Y = A), MUL (Y = B), DIV (Y = C), mentre siamo in attesa dell'operando (Z = W = WAIT), oppure quando l'operando √® pronto ma non possiamo calcolare perch√© siamo privati dell'unit√† funzionale (Z = R = READY) o infine mentre stiamo effettuando la nostra operazione (Z = E = EXECUTE). Ad esempio: A0E = \textit{reservation station} 0 riservata alla ADD, stiamo calcolando la somma (E);
 \item con WB la fase di \textit{write back}.
 \end{itemize}
 
-Una prima cosa che possiamo notare Ë che ogni istruzione entrante nella \textit{pipeline} deve anzitutto effettuare la \textit{fetch} (diagonale rossa). CiÚ Ë sempre vero, qualsiasi sia lo stato delle alee o il numero delle istruzioni in gioco: non Ë perÚ sempre detto che la \textit{fetch} duri un unico clock o che sia seguita immediatamente la fase di \textit{decode}. L'ultima ADD, infatti, Ë obbligata a stallare in ID in quanto non vi sono \textit{reservation station} libere (A0 Ë occupata e siamo in attesa di ricevere l'operando F1 dalla prima DIV per poter eseguire F1 + F4 => F7; anche A1 Ë occupata perchÈ sta attendendo F1): se avessimo avuto tre RS per ogni unit‡ funzionale (v. oltre) l'ultima ADD non avrebbe dovuto stallare in ID ma avrebbe potuto immediatamente procedere con una A2E. Notiamo inoltre che l'ultima istruzione (MUL) rimane in \textit{fetch} intanto che la ADD immediatamente precedente stalla in ID per carenza di RS (\textit{alea strutturale}).
-Torniamo in cima: la DIV Ë la prima istruzione Ë puÚ immediatamente partire, perciÚ la sua evoluzione temporale Ë ovvia (IF, ID, 5 cicli per effettuare l'operazione, WB). La prima istruzione, qualsiasi sia l'esercizio, puÚ sempre andare immediatamente in EXECUTE, non dovendo attendere operandi da altre istruzioni.
-La seconda, purtroppo, non puÚ fare altrettanto: F1, infatti, deve prima essere aggiornato dall'istruzione precedente, eventualit‡ che si verifica a seguito della fase di WB della DIV (in T8). Notiamo infatti che si ha A0W (attesa di operandi) da T4 fino a T8 e quindi A0E per i due cicli successivi. Attenzione: la fase di EXECUTE comincia sempre il ciclo successivo la WB dell'istruzione precedente che ha aggiornato l'operando!
-Nel frattempo anche la MUL Ë costretta ad aspettare il WB della DIV (T8) per poter partire: l'evoluzione di tale MUL si snoda quindi in modo assolutamente analogo alla ADD precedente. Si noti che Ë possibile effettuare parallelamente una ADD, una MUL e una DIV (e infatti in T9 e T10 abbiamo due fasi E contemporanee), ma Ë assolutamente impossibile effettuare simultaneamente due operazioni dello stesso tipo: una buona verifica della bont‡ della soluzione Ë quindi quella di controllare che non vi siano mai pi˘ di una ADD o pi˘ di una MUL o pi˘ di una DIV contemporaneamente in esecuzione!
-Dopo la MUL, ecco un'altra ADD: siamo salvi, abbiamo infatti occupato solo una delle due RS disponibili! In T6, quindi, possiamo scrivere A1W e metterci nuovamente in attesa dello stramaledetto F1 in uscita dalla DIV. Quel che non possiamo fare Ë invece eseguire la ADD in T9: gi‡ una ADD Ë infatti in esecuzione (A0E), quindi l'unica Ë riparare su A1R (READY: l'operando F1, richiesto, Ë pronto, ma non possiamo ancora eseguire a causa di \textit{alea strutturale}).
-T10 Ë l'ultimo ciclo di clock in cui l'unit‡ funzionale delle ADD Ë occupata: in T11, quindi, A1R puÚ passare in A1E.
-L'ultima ADD Ë costretta a stallare in ID, come gi‡ abbiamo sottolineato: ma non facciamoci ingannare! Quand'anche la \textit{reservation station} A0 si libera non possiamo fiondarci ad assegnare un identico \textit{tag} alla nostra nuova istruzione! Prima dobbiamo effettuare la "'vera'" ID (in T12, "'causata'" dal WB nel precedente T11) e quindi solo in in T13 possiamo scrivere A0E anche per la nostra ADD.
+Una prima cosa che possiamo notare √® che ogni istruzione entrante nella \textit{pipeline} deve anzitutto effettuare la \textit{fetch} (diagonale rossa). Ci√≤ √® sempre vero, qualsiasi sia lo stato delle alee o il numero delle istruzioni in gioco: non √® per√≤ sempre detto che la \textit{fetch} duri un unico clock o che sia seguita immediatamente la fase di \textit{decode}. L'ultima ADD, infatti, √® obbligata a stallare in ID in quanto non vi sono \textit{reservation station} libere (A0 √® occupata e siamo in attesa di ricevere l'operando F1 dalla prima DIV per poter eseguire F1 + F4 => F7; anche A1 √® occupata perch√© sta attendendo F1): se avessimo avuto tre RS per ogni unit√† funzionale (v. oltre) l'ultima ADD non avrebbe dovuto stallare in ID ma avrebbe potuto immediatamente procedere con una A2E. Notiamo inoltre che l'ultima istruzione (MUL) rimane in \textit{fetch} intanto che la ADD immediatamente precedente stalla in ID per carenza di RS (\textit{alea strutturale}).
+Torniamo in cima: la DIV √® la prima istruzione √® pu√≤ immediatamente partire, perci√≤ la sua evoluzione temporale √® ovvia (IF, ID, 5 cicli per effettuare l'operazione, WB). La prima istruzione, qualsiasi sia l'esercizio, pu√≤ sempre andare immediatamente in EXECUTE, non dovendo attendere operandi da altre istruzioni.
+La seconda, purtroppo, non pu√≤ fare altrettanto: F1, infatti, deve prima essere aggiornato dall'istruzione precedente, eventualit√† che si verifica a seguito della fase di WB della DIV (in T8). Notiamo infatti che si ha A0W (attesa di operandi) da T4 fino a T8 e quindi A0E per i due cicli successivi. Attenzione: la fase di EXECUTE comincia sempre il ciclo successivo la WB dell'istruzione precedente che ha aggiornato l'operando!
+Nel frattempo anche la MUL √® costretta ad aspettare il WB della DIV (T8) per poter partire: l'evoluzione di tale MUL si snoda quindi in modo assolutamente analogo alla ADD precedente. Si noti che √® possibile effettuare parallelamente una ADD, una MUL e una DIV (e infatti in T9 e T10 abbiamo due fasi E contemporanee), ma √® assolutamente impossibile effettuare simultaneamente due operazioni dello stesso tipo: una buona verifica della bont√† della soluzione √® quindi quella di controllare che non vi siano mai pi√π di una ADD o pi√π di una MUL o pi√π di una DIV contemporaneamente in esecuzione!
+Dopo la MUL, ecco un'altra ADD: siamo salvi, abbiamo infatti occupato solo una delle due RS disponibili! In T6, quindi, possiamo scrivere A1W e metterci nuovamente in attesa dello stramaledetto F1 in uscita dalla DIV. Quel che non possiamo fare √® invece eseguire la ADD in T9: gi√† una ADD √® infatti in esecuzione (A0E), quindi l'unica √® riparare su A1R (READY: l'operando F1, richiesto, √® pronto, ma non possiamo ancora eseguire a causa di \textit{alea strutturale}).
+T10 √® l'ultimo ciclo di clock in cui l'unit√† funzionale delle ADD √® occupata: in T11, quindi, A1R pu√≤ passare in A1E.
+L'ultima ADD √® costretta a stallare in ID, come gi√† abbiamo sottolineato: ma non facciamoci ingannare! Quand'anche la \textit{reservation station} A0 si libera non possiamo fiondarci ad assegnare un identico \textit{tag} alla nostra nuova istruzione! Prima dobbiamo effettuare la "'vera'" ID (in T12, "'causata'" dal WB nel precedente T11) e quindi solo in in T13 possiamo scrivere A0E anche per la nostra ADD.
 L'ultima MUL rimane invece in IF intanto che la ADD precedente stalla in ID; in T13 arriva il turno della MUL e infine si hanno tre cicli di esecuzione (B0E) prima dell'ultimo WB. \\
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\columnwidth]{img/tomasEs1b}
-\caption{Dinamica dell'esecuzione nel caso di 3 \textit{reservation station} per unit‡ funzionale.}
+\caption{Dinamica dell'esecuzione nel caso di 3 \textit{reservation station} per unit√† funzionale.}
 \label{fig:tomasEs1b}
 \end{figure}
 
-Se disponiamo di 3 RS (invece che 2) per unit‡ funzionale, risparmiamo qualche \textit{clock} rispetto al caso precedente, in quanto possiamo evitare l'alea strutturale dell'ultima ADD. In figura \ref{fig:tomasEs1b} si mostra tale risultato: si noti che i clock totali sono 14 invece che 17, per uno \textit{speed-up} pari a 
+Se disponiamo di 3 RS (invece che 2) per unit√† funzionale, risparmiamo qualche \textit{clock} rispetto al caso precedente, in quanto possiamo evitare l'alea strutturale dell'ultima ADD. In figura \ref{fig:tomasEs1b} si mostra tale risultato: si noti che i clock totali sono 14 invece che 17, per uno \textit{speed-up} pari a 
 \[
 \dfrac{17}{14} = 1,214
 \]
-Il risparmio Ë dovuto principalmente alla velocizzazione delle ultime due istruzioni, come gi‡ anticipato: in particolare, l'ultima ADD puÚ sfruttare un vuoto della relativa unit‡ funzionale, la quale non Ë utilizzata dalle altre due analoghe istruzioni a causa della mancanza di F1 (che ci tocca sorbire fino a F8). 
-Si noti infine che, in caso di pi˘ WB contemporanee, Ë necessario far progressivamente stallare quelle delle istruzioni successive alla prima, nonchÈ all'unica, istruzione che puÚ davvero eseguire il WB\footnote{Si veda tuttavia il paragrafo \ref{sec:casiParticolari} per maggiori chiarimenti.}. Nell'esempio, il \textit{clock} incriminato Ë T11: la ADD sta effettuando il WB e l'ultima MUL Ë costretta a ripeterlo in T12.
+Il risparmio √® dovuto principalmente alla velocizzazione delle ultime due istruzioni, come gi√† anticipato: in particolare, l'ultima ADD pu√≤ sfruttare un vuoto della relativa unit√† funzionale, la quale non √® utilizzata dalle altre due analoghe istruzioni a causa della mancanza di F1 (che ci tocca sorbire fino a F8). 
+Si noti infine che, in caso di pi√π WB contemporanee, √® necessario far progressivamente stallare quelle delle istruzioni successive alla prima, nonch√© all'unica, istruzione che pu√≤ davvero eseguire il WB\footnote{Si veda tuttavia il paragrafo \ref{sec:casiParticolari} per maggiori chiarimenti.}. Nell'esempio, il \textit{clock} incriminato √® T11: la ADD sta effettuando il WB e l'ultima MUL √® costretta a ripeterlo in T12.
 
 \section{Film delle variazioni dei registri}
 \label{sec:filmRegistri}
 
-\textsf{Si mostri il film delle variazioni dei registri F1 e F8 immaginando, per semplicit‡, che all'inizio si abbia $Fi=i$.}
+\textsf{Si mostri il film delle variazioni dei registri F1 e F8 immaginando, per semplicit√†, che all'inizio si abbia $Fi=i$.}
 
 \begin{figure}[!h]
 \centering
@@ -70,16 +70,16 @@ Si noti infine che, in caso di pi˘ WB contemporanee, Ë necessario far progressiv
 \label{fig:tomasEs1c}
 \end{figure}
 
-Mostrare il film dei registri significa illustrare l'evoluzione della coppia di valori Q e V per i registri richiesti. Il parametro V Ë il valore assunto da un determinato registro in un particolare momento, mentre Q puÚ essere pari a 0 (se il valore V Ë quello attualmente valido) o pari all'identificatore della RS che "'restituir‡'" tale risultato. Se Q Ë pari all'identificatore di una certa RS, allora significa che potremo porre Q = 0 e V pari al vero valore che il registro avr‡ in tale momento quando l'istruzione che ha prenotato quella \textit{reservation station} avr‡ effettuato il WB (o, pi˘ precisamente, il ciclo successivo). 
-Esaminiamo la figura \ref{fig:tomasEs1c} e il registro F1: inizialmente la coppia (Q,V) sar‡ (0,1) in quanto il valore di partenza del registro F1 Ë (per ipotesi) 1 ed Ë un valore gi‡ disponibile e, per cosÏ dire, "'aggiornato'". Ogni volta che un'operazione prenota una \textit{reservation station} per il calcolo del valore di F1 dobbiamo impostare nuovamente il parametro Q: cosÏ ad esempio avviene in T3 (la DIV passa in C0E e quindi Q = C0) e in T7 (la ADD va in A2E e quindi Q = A2). Il valore V, in entrambi questi casi, non va toccato: esso va invece aggiornato nel ciclo successivo alla WB associata alla \textit{reservation station} corrispondente al valore Q. Nel nostro caso, Q = A2, quindi dobbiamo aggiornare V il ciclo successivo a quello in cui l'ultima ADD (quella che ha prenotato la \textit{reservation station} A2) ha effettuato il WB (cioË in T10, quando F1 diventa pari a 3 + 4 = 7).
+Mostrare il film dei registri significa illustrare l'evoluzione della coppia di valori Q e V per i registri richiesti. Il parametro V √® il valore assunto da un determinato registro in un particolare momento, mentre Q pu√≤ essere pari a 0 (se il valore V √® quello attualmente valido) o pari all'identificatore della RS che "'restituir√†'" tale risultato. Se Q √® pari all'identificatore di una certa RS, allora significa che potremo porre Q = 0 e V pari al vero valore che il registro avr√† in tale momento quando l'istruzione che ha prenotato quella \textit{reservation station} avr√† effettuato il WB (o, pi√π precisamente, il ciclo successivo). 
+Esaminiamo la figura \ref{fig:tomasEs1c} e il registro F1: inizialmente la coppia (Q,V) sar√† (0,1) in quanto il valore di partenza del registro F1 √® (per ipotesi) 1 ed √® un valore gi√† disponibile e, per cos√¨ dire, "'aggiornato'". Ogni volta che un'operazione prenota una \textit{reservation station} per il calcolo del valore di F1 dobbiamo impostare nuovamente il parametro Q: cos√¨ ad esempio avviene in T3 (la DIV passa in C0E e quindi Q = C0) e in T7 (la ADD va in A2E e quindi Q = A2). Il valore V, in entrambi questi casi, non va toccato: esso va invece aggiornato nel ciclo successivo alla WB associata alla \textit{reservation station} corrispondente al valore Q. Nel nostro caso, Q = A2, quindi dobbiamo aggiornare V il ciclo successivo a quello in cui l'ultima ADD (quella che ha prenotato la \textit{reservation station} A2) ha effettuato il WB (cio√® in T10, quando F1 diventa pari a 3 + 4 = 7).
 
-Detto questo, il film di F8 diventa una banalit‡: la prima volta in cui un'istruzione bussa ad una RS per F8 avviene in T8, quando la MUL prenota la \textit{reservation station} B1: in T8 andremo quindi a scrivere Q = B1. Se nessun'altra istruzione vuole scrivere su B8 (e, per fare ciÚ, prenota una RS), dovremo aggiornare il valore V di F8 il ciclo successivo in cui la MUL avr‡ eseguito il WB. Quanto detto Ë effettivamente ciÚ avviene: in T12 la MUL effettua il WB e in T13 il valore del registro viene aggiornato.
+Detto questo, il film di F8 diventa una banalit√†: la prima volta in cui un'istruzione bussa ad una RS per F8 avviene in T8, quando la MUL prenota la \textit{reservation station} B1: in T8 andremo quindi a scrivere Q = B1. Se nessun'altra istruzione vuole scrivere su B8 (e, per fare ci√≤, prenota una RS), dovremo aggiornare il valore V di F8 il ciclo successivo in cui la MUL avr√† eseguito il WB. Quanto detto √® effettivamente ci√≤ avviene: in T12 la MUL effettua il WB e in T13 il valore del registro viene aggiornato.
 
 \section{Film delle variazioni delle RS}
 \label{sec:filmRS}
 
-\textsf{Si mostri il film delle variazioni della RS B0 nel caso di 3 RS per unit‡ funzionale, immaginando per
-semplicit‡ che all'inizio si abbia $Fi=i$.}\\
+\textsf{Si mostri il film delle variazioni della RS B0 nel caso di 3 RS per unit√† funzionale, immaginando per
+semplicit√† che all'inizio si abbia $Fi=i$.}\\
 
 \begin{figure}[!h]
 \centering
@@ -88,16 +88,16 @@ semplicit‡ che all'inizio si abbia $Fi=i$.}\\
 \label{fig:tomasEs1d}
 \end{figure}
 
-La metodologia e l'approccio non Ë tanto diverso rispetto al caso precedente: in ogni RS sono presenti due coppie (Q,V), riservate ciascuna ad un operando dell'operazione che prenoter‡ la RS. I valori di Q e V all'interno della RS variano con le stesse modalit‡ descritte nel paragrafo \ref{sec:filmRegistri}.
-Nel nostro caso si chiede di disegnare il film della RS B0: la prima istruzione a prenotarla Ë la \{MUL F1, F2, F1\} quindi dovremo andare a scrivere le coppie (Q,V) di F2 e F1. F2 non Ë mai stato toccato quindi gli assegneremo il valore di \textit{default}, cioË 2, scrivendo la coppia (0,2); F1, invece, Ë il fastidiosissimo registro monopolizzato dall'altrettanto fastidiosa DIV, la quale ha prenotato la RS C0 in T3. La coppia (Q,V) sar‡ quindi (C0,1) e varier‡ in (0,2/3) il ciclo successivo al WB della DIV. La \textit{reservation station} B0 potr‡ quindi essere disimpegnata il ciclo successivo al WB dell'istruzione che l'ha prenotata (la MUL: WB in T14 e rilascio in T15).
+La metodologia e l'approccio non √® tanto diverso rispetto al caso precedente: in ogni RS sono presenti due coppie (Q,V), riservate ciascuna ad un operando dell'operazione che prenoter√† la RS. I valori di Q e V all'interno della RS variano con le stesse modalit√† descritte nel paragrafo \ref{sec:filmRegistri}.
+Nel nostro caso si chiede di disegnare il film della RS B0: la prima istruzione a prenotarla √® la \{MUL F1, F2, F1\} quindi dovremo andare a scrivere le coppie (Q,V) di F2 e F1. F2 non √® mai stato toccato quindi gli assegneremo il valore di \textit{default}, cio√® 2, scrivendo la coppia (0,2); F1, invece, √® il fastidiosissimo registro monopolizzato dall'altrettanto fastidiosa DIV, la quale ha prenotato la RS C0 in T3. La coppia (Q,V) sar√† quindi (C0,1) e varier√† in (0,2/3) il ciclo successivo al WB della DIV. La \textit{reservation station} B0 potr√† quindi essere disimpegnata il ciclo successivo al WB dell'istruzione che l'ha prenotata (la MUL: WB in T14 e rilascio in T15).
 
 \section{Miglioramento delle prestazioni: calcolo dello \textit{speed-up}}
 \label{sec:viagra}
 
-\textsf{Si calcoli lo \textit{speed up }di entrambe le soluzioni rispetto al caso di una sola unit‡ funzionale capace di
+\textsf{Si calcoli lo \textit{speed up }di entrambe le soluzioni rispetto al caso di una sola unit√† funzionale capace di
 eseguire le tre istruzioni e si commenti il risultato}.\\
 
-Nel caso di una sola unit‡ funzionale non in pipeline il numero di \textit{clock} necessari Ë dato dalla semplice somma della durata di tutte le istruzioni (da considerarsi come eseguite in maniera sequenziale). Nel nostro caso Ë data da: 
+Nel caso di una sola unit√† funzionale non in pipeline il numero di \textit{clock} necessari √® dato dalla semplice somma della durata di tutte le istruzioni (da considerarsi come eseguite in maniera sequenziale). Nel nostro caso √® data da: 
 \begin{itemize}
 \item 1 clock per la IF
 \item 1 clock per la ID
@@ -106,7 +106,7 @@ Nel caso di una sola unit‡ funzionale non in pipeline il numero di \textit{clock
 \item 3 clock per ogni MUL (per un totale di 6)
 \item 1 clock per il WB
 \end{itemize}
-Il totale restituisce 20 clock, risultato piuttosto modesto confrontato coi 17 e i 14 clock che si hanno nel caso di due e tre RS per ogni unit‡ funzionale. L'incremento delle prestazioni dovuto all'inserimento delle RS puÚ essere quantificato tramite il parametro \textit{speed-up} calcolabile semplicemente come rapporto fra i clock della caso pi˘ "'lento'" rispetto a quelli del caso pi˘ "'veloce'" (cioË con apportato il miglioramento in questione). \\
+Il totale restituisce 20 clock, risultato piuttosto modesto confrontato coi 17 e i 14 clock che si hanno nel caso di due e tre RS per ogni unit√† funzionale. L'incremento delle prestazioni dovuto all'inserimento delle RS pu√≤ essere quantificato tramite il parametro \textit{speed-up} calcolabile semplicemente come rapporto fra i clock della caso pi√π "'lento'" rispetto a quelli del caso pi√π "'veloce'" (cio√® con apportato il miglioramento in questione). \\
 \textit{Speed up} con 2 RS: 
 \[
 \dfrac{20}{17}=1,176
@@ -120,7 +120,7 @@ Il totale restituisce 20 clock, risultato piuttosto modesto confrontato coi 17 e
 \label{sec:casiParticolari}
 
 \begin{itemize}
-\item Nel caso di istruzioni che tentino di effettuare contemporaneamente un WB, abbiamo detto nel paragrafo \ref{sec:dinamicaTomasulo}, le istruzioni "'successive'" alla prima che riesce ad effettuare il WB dovranno ripetere tale fase per poterla effettivamente compiere. S'intende perÚ che ha la precedenza chi, per prima, Ë andata in \textit{execute} e puÚ accadere che un'istruzione dichiara diverse "'posizioni'" sotto un seconda istruzione sia in grado di effettuare il WB prima di quest'ultima. 
+\item Nel caso di istruzioni che tentino di effettuare contemporaneamente un WB, abbiamo detto nel paragrafo \ref{sec:dinamicaTomasulo}, le istruzioni "'successive'" alla prima che riesce ad effettuare il WB dovranno ripetere tale fase per poterla effettivamente compiere. S'intende per√≤ che ha la precedenza chi, per prima, √® andata in \textit{execute} e pu√≤ accadere che un'istruzione dichiara diverse "'posizioni'" sotto un seconda istruzione sia in grado di effettuare il WB prima di quest'ultima. 
 Ad esempio:
 \begin{verbatim}
 ADD   F18, F1, F22       IF  ID  ...  ...  A0W  A0E  ...  ...  WB   WB <- !!
@@ -128,7 +128,7 @@ ADD   F18, F1, F22       IF  ID  ...  ...  A0W  A0E  ...  ...  WB   WB <- !!
 ...
 MUL   F19, F3, F2        ... IF  ID   B0E  B0E  ...  ...  ...  WB  
 \end{verbatim}
-\item Se si chiede di provare a cambiare l'ordine delle istruzioni, e di verificare possibili aumenti prestazionali dovuti ad un conseguente risparmio di cicli di \textit{clock}, bisogna stare attenti a non farsi prendere dalla mano e verificare che il nuovo ordine non alteri il valore dei registri. Non Ë la stessa cosa fare $(1+2)\cdot 3$ piuttosto che $1 + (2\cdot 3)$!
+\item Se si chiede di provare a cambiare l'ordine delle istruzioni, e di verificare possibili aumenti prestazionali dovuti ad un conseguente risparmio di cicli di \textit{clock}, bisogna stare attenti a non farsi prendere dalla mano e verificare che il nuovo ordine non alteri il valore dei registri. Non √® la stessa cosa fare $(1+2)\cdot 3$ piuttosto che $1 + (2\cdot 3)$!
 \item Se si chiede di calcolare il minimo numero di cicli di \textit{clock}, qualunque sia il numero di RS, CRB e stadi di \textit{fetch} e \textit{decode} disponibili, basta effettuare il procedimento seguente: si calcola il massimo fra i seguenti prodotti
 \[
 \text{Numero di istruzioni di tipo X} \cdot \text{Clock impiegati per l'esecuzione dell'istruzione X}
@@ -137,8 +137,8 @@ Quindi, se la ADD impiega 3 clock (4 ADD da effettuare), la MUL impiega 4 clock 
 \[
 3\cdot 4 = 12  ~~~~~ 4\cdot 2 = 8  ~~~~~ 6\cdot 3 = 18 
 \]
-A questo risultato vanno sommati 2 clock (uno per ID e uno per IF) e tanti cicli di WB quante sono le istruzioni effettuate (il WB Ë obbligatorio e solo un ciclo dopo la sua messa in atto una nuova istruzione precedentemente in \textit{ready} o in \textit{waiting} puÚ partire! Questo implica un'attesa di un clock per ogni istruzione).
-\item Il numero di cicli di clock impiegato nell'elaborazione nel caso puramente sequenziale (non in \textit{pipeline}) Ë invece pari a 
+A questo risultato vanno sommati 2 clock (uno per ID e uno per IF) e tanti cicli di WB quante sono le istruzioni effettuate (il WB √® obbligatorio e solo un ciclo dopo la sua messa in atto una nuova istruzione precedentemente in \textit{ready} o in \textit{waiting} pu√≤ partire! Questo implica un'attesa di un clock per ogni istruzione).
+\item Il numero di cicli di clock impiegato nell'elaborazione nel caso puramente sequenziale (non in \textit{pipeline}) √® invece pari a 
 \[
 3 + \sum_i \left( \text{Numero istruzioni di tipo \textit{i}} \cdot \text{Clock per istruzione di tipo \textit{i}} \right)
 \]
@@ -147,7 +147,7 @@ Prendendo in considerazione l'esempio del punto precedente abbiamo quindi
 \[
 3 + (12 + 8 + 3) = 26~ \text{ clock}
 \]
-Un calcolo analogo puÚ essere trovato nel paragrafo \ref{sec:viagra}.
+Un calcolo analogo pu√≤ essere trovato nel paragrafo \ref{sec:viagra}.
 \item Con $k$ CRB fino a $k$ istruzioni possono effettuare contemporaneamente un WB "'valido'".
 
 \end{itemize}

@@ -4,7 +4,7 @@
 \section{Decoder e memorie}
 \label{sec:decoderMemorie}
 
-Supponiamo di voler realizzare 1 MB di RAM utilizzando un certo numero di chip: per indirizzare tale quantit‡ di memoria servono 20 bit, quindi una scelta potrebbe essere quella di utilizzare $2^3$ chip da $2^{20-3}=2^{17}=128K$ byte. Ogni chip avr‡ perciÚ la struttura come quella in figura \ref{fig:decoderino}, con 17 bit di indirizzamento e un segnale di \textit{enable} per attivare o meno il dispositivo (e spegnerlo quando non c'Ë bisogno, per evitare conflitti e risparmiare preziosa energia).
+Supponiamo di voler realizzare 1 MB di RAM utilizzando un certo numero di chip: per indirizzare tale quantit√† di memoria servono 20 bit, quindi una scelta potrebbe essere quella di utilizzare $2^3$ chip da $2^{20-3}=2^{17}=128K$ byte. Ogni chip avr√† perci√≤ la struttura come quella in figura \ref{fig:decoderino}, con 17 bit di indirizzamento e un segnale di \textit{enable} per attivare o meno il dispositivo (e spegnerlo quando non c'√® bisogno, per evitare conflitti e risparmiare preziosa energia).
 
 \begin{figure}[!h]
 \centering
@@ -13,9 +13,9 @@ Supponiamo di voler realizzare 1 MB di RAM utilizzando un certo numero di chip: 
 \label{fig:decoderino}
 \end{figure}
 
-All'interno del chip Ë presente un decoder, dispositivo a $N$ ingressi e $2^N$ uscite, una sola delle quali Ë attiva in un certo istante: esiste infatti una sola uscita ad '1', qualsiasi sia la configurazione d'ingresso.
+All'interno del chip √® presente un decoder, dispositivo a $N$ ingressi e $2^N$ uscite, una sola delle quali √® attiva in un certo istante: esiste infatti una sola uscita ad '1', qualsiasi sia la configurazione d'ingresso.
 
-Volendo, possiamo sfruttare la propriet‡ associativa della moltiplicazione [$x_1x_2x_3=(x_1x_2)x_3$] per costruire un decoder a $2^N$ uscite a partire da $2^{(N-K)}$ analoghi componenti con $2^K$ uscite: nell'esempio in figura \ref{fig:decoderone} si mostra come ottenere un decoder a $2^4=16$ uscite a partire da $2^{(4-2)}=4$ decoder a $2^2=4$ uscite.
+Volendo, possiamo sfruttare la propriet√† associativa della moltiplicazione [$x_1x_2x_3=(x_1x_2)x_3$] per costruire un decoder a $2^N$ uscite a partire da $2^{(N-K)}$ analoghi componenti con $2^K$ uscite: nell'esempio in figura \ref{fig:decoderone} si mostra come ottenere un decoder a $2^4=16$ uscite a partire da $2^{(4-2)}=4$ decoder a $2^2=4$ uscite.
 
 \begin{figure}[!h]
 \centering
@@ -24,7 +24,7 @@ Volendo, possiamo sfruttare la propriet‡ associativa della moltiplicazione [$x_1
 \label{fig:decoderone}
 \end{figure}
 
-Il decoder \textit{root}, cioË quello di livello pi˘ alto, utilizza i due bit pi˘ significativi ($x_3x_2$) per discriminare quale dei quattro decoder "'figli'" attivare tramite il segnale di \textit{enable}: ognuno di questi, a sua volta, sceglie quale uscita far passare ad '1' in base ai bit meno significativi $ x_1x_0$.
+Il decoder \textit{root}, cio√® quello di livello pi√π alto, utilizza i due bit pi√π significativi ($x_3x_2$) per discriminare quale dei quattro decoder "'figli'" attivare tramite il segnale di \textit{enable}: ognuno di questi, a sua volta, sceglie quale uscita far passare ad '1' in base ai bit meno significativi $ x_1x_0$.
 Nell'esempio fatto ad inizio capitolo (1 MB RAM, 8 chip da 128 KB) possiamo scegliere di usare 3 bit per il decoder \textit{root} e 17 bit per ogni chip come quello in figura \ref{fig:decoderino}.
 
 \section{Bus dati con parallelismo di $n$ byte}
@@ -34,7 +34,7 @@ Nell'esempio fatto ad inizio capitolo (1 MB RAM, 8 chip da 128 KB) possiamo sceg
 \textit{NOTA PRELIMINARE: in questo paragrafo faremo due esempi. Il primo, con 4 banchi (v. oltre), si riferisce ad una  architettura a 32 bit. Il Pentium, con bus dati a 64 bit, dispone di 8 banchi per poter sfruttare al massimo il suo parallelismo.}} \\
 
 
-La quantit‡ minima di informazioni normalmente indirizzabile da parte di un microprocessore Ë pari ad un byte, ma non Ë necessario che il bus dati del microprocessore abbia il parallelismo limitato a un byte. Ci si puÚ quindi porre l'obiettivo di aumentare il parallelismo del bus al fine di trasferire pi˘ byte in un solo trasferimento, col vincolo di conservare l'indirizzabilit‡ del singolo byte. Vogliamo cioË aumentare il \textit{throughput} del bus senza cambiare le temporizzazioni, portando il parallelismo del bus dati a $m$ byte, con $ m = 2^k$, in modo da poter trasferire fino a $2^k$ byte per ogni trasferimento. Tutto ciÚ Ë arduo da farsi all'interno di una memoria con struttura monolitica. Piuttosto, fa maggiormente al caso nostro una memoria suddivisa in pi˘ "'compartimenti'" (banchi) in grado di essere attivi indipendentemente l'uno dall'altro (a differenza di quanto permette il decoder, che accende sempre una sola uscita alla volta). Per realizzare quanto appena detto Ë necessario che indirizzi consecutivi appartengano a chip diversi (\textit{interleaving}); si osservi ad esempio la figura \ref{fig:bancobanchi}: essa mostra come sia possibile suddividere una memoria da 4 GB in pi˘ banchi di memoria, ognuno di dimensione inferiore (2x2 GB, 4x1 GB). Se ci raffiguriamo mentalmente la nostra memoria bidimensionale (il rettangolone con gli indirizzi scritti di fianco, tanto per intenderci) dobbiamo immaginare l'indirizzamento a partire da in basso a destra e andando prima verso sinistra e poi verso l'alto, come suggerisce la figura \ref{fig:alfaBetaBanchi}, con il primo byte nel banco 0 avente indirizzo 0, il secondo avente indirizzo 4, il terzo avente indirizzo 8 etc\ldots (se leggiamo dal basso verso l'alto, nel banco 1 avremo invece gli indirizzi 1, 5 e 9\ldots, nel banco 2 gli indirizzi 2, 6, 10\ldots e cosÏ via).
+La quantit√† minima di informazioni normalmente indirizzabile da parte di un microprocessore √® pari ad un byte, ma non √® necessario che il bus dati del microprocessore abbia il parallelismo limitato a un byte. Ci si pu√≤ quindi porre l'obiettivo di aumentare il parallelismo del bus al fine di trasferire pi√π byte in un solo trasferimento, col vincolo di conservare l'indirizzabilit√† del singolo byte. Vogliamo cio√® aumentare il \textit{throughput} del bus senza cambiare le temporizzazioni, portando il parallelismo del bus dati a $m$ byte, con $ m = 2^k$, in modo da poter trasferire fino a $2^k$ byte per ogni trasferimento. Tutto ci√≤ √® arduo da farsi all'interno di una memoria con struttura monolitica. Piuttosto, fa maggiormente al caso nostro una memoria suddivisa in pi√π "'compartimenti'" (banchi) in grado di essere attivi indipendentemente l'uno dall'altro (a differenza di quanto permette il decoder, che accende sempre una sola uscita alla volta). Per realizzare quanto appena detto √® necessario che indirizzi consecutivi appartengano a chip diversi (\textit{interleaving}); si osservi ad esempio la figura \ref{fig:bancobanchi}: essa mostra come sia possibile suddividere una memoria da 4 GB in pi√π banchi di memoria, ognuno di dimensione inferiore (2x2 GB, 4x1 GB). Se ci raffiguriamo mentalmente la nostra memoria bidimensionale (il rettangolone con gli indirizzi scritti di fianco, tanto per intenderci) dobbiamo immaginare l'indirizzamento a partire da in basso a destra e andando prima verso sinistra e poi verso l'alto, come suggerisce la figura \ref{fig:alfaBetaBanchi}, con il primo byte nel banco 0 avente indirizzo 0, il secondo avente indirizzo 4, il terzo avente indirizzo 8 etc\ldots (se leggiamo dal basso verso l'alto, nel banco 1 avremo invece gli indirizzi 1, 5 e 9\ldots, nel banco 2 gli indirizzi 2, 6, 10\ldots e cos√¨ via).
 
 \begin{figure}[!h]
 \centering
@@ -43,7 +43,7 @@ La quantit‡ minima di informazioni normalmente indirizzabile da parte di un micr
 \label{fig:bancobanchi}
 \end{figure}
 
-Se, come abbiamo detto poco fa, Ë possibile attivare i banchi indipendentemente l'uno dall'altro, sar‡ possibile selezionare fino a 4 byte (32 bit) a seconda se vogliamo un byte, una \textit{word} (2 byte, 2 banchi attivi), una\textit{ double word} (4 byte, 4 banchi attivi). Nell'esempio in figura \ref{fig:alfaBetaBanchi}, possiamo prendere ALFA selezionando il banco 0, mentre BETA Ë stata allocata ad indirizzi contigui (1-4) secondo la convenzione \textit{little endian}.
+Se, come abbiamo detto poco fa, √® possibile attivare i banchi indipendentemente l'uno dall'altro, sar√† possibile selezionare fino a 4 byte (32 bit) a seconda se vogliamo un byte, una \textit{word} (2 byte, 2 banchi attivi), una\textit{ double word} (4 byte, 4 banchi attivi). Nell'esempio in figura \ref{fig:alfaBetaBanchi}, possiamo prendere ALFA selezionando il banco 0, mentre BETA √® stata allocata ad indirizzi contigui (1-4) secondo la convenzione \textit{little endian}.
 
 \begin{figure}[!h]
 \centering
@@ -52,7 +52,7 @@ Se, come abbiamo detto poco fa, Ë possibile attivare i banchi indipendentemente 
 \label{fig:alfaBetaBanchi}
 \end{figure}
 
-I segnali che permettono di abilitare i banchi e distinguere fra i vari casi descritti sopra vengono detti \textit{bank enable} (BE). Per quanto detto fin'ora, possiamo sinteticamente affermare che il \textit{chip select} (CS) di un qualsiasi blocco di memoria mappato nella finestra di indirizzamento di 4 GB del nostro calcolatore sar‡ individuato da due coordinate: la finestra di offset (coordinata verticale), che si configura come il classico \textit{chip select} visto a Calcolatori L-A, e il \textit{bank enable} (BE). Il microprocessore sa dove comincia un determinato dato, quale sia la sua dimensione e il suo offset nel banco dunque Ë perfettamente in grado di accedervi.
+I segnali che permettono di abilitare i banchi e distinguere fra i vari casi descritti sopra vengono detti \textit{bank enable} (BE). Per quanto detto fin'ora, possiamo sinteticamente affermare che il \textit{chip select} (CS) di un qualsiasi blocco di memoria mappato nella finestra di indirizzamento di 4 GB del nostro calcolatore sar√† individuato da due coordinate: la finestra di offset (coordinata verticale), che si configura come il classico \textit{chip select} visto a Calcolatori L-A, e il \textit{bank enable} (BE). Il microprocessore sa dove comincia un determinato dato, quale sia la sua dimensione e il suo offset nel banco dunque √® perfettamente in grado di accedervi.
 
 \begin{figure}[!h]
 \centering
@@ -65,14 +65,14 @@ bus dati e indirizzi di 32 bit}
 In figura \ref{fig:microMultiByte} notiamo che:
 \begin{itemize}
 \item i pin della CPU da interfacciare al bus dati sono suddivisi in gruppi di 8 pin (chiamati BD[\ldots]);
-\item ad ogni gruppo Ë associato un segnale $BEi$: se Ë attivo, la CPU trasferisce dati sul corrispondente insieme di pin BD[\ldots];
-\item ad ogni ciclo di bus il microprocessore genera un offset e attiva uno o pi˘ segnali di \textit{bank enable};
-\item ogni \textit{bank enable} attivo individua una delle quattro celle da un byte associate all'offset presente sul bus degli indirizzi in posizione A[31..2]: questo byte sar‡ trasferito su un ben preciso byte del bus dati. Chiaramente il numero dei  \textit{bank enable} attivi dipende dal numero di byte del dato da trasferire;
-\item se il dato da trasferire Ë composto da byte con diversi valori di offset (dato non allineato), il
-microprocessore non ha scelta e dovr‡ effettuare pi˘ trasferimenti sul bus; in caso contrario (dato allineato) il trasferimento avviene solamente in un ciclo.
+\item ad ogni gruppo √® associato un segnale $BEi$: se √® attivo, la CPU trasferisce dati sul corrispondente insieme di pin BD[\ldots];
+\item ad ogni ciclo di bus il microprocessore genera un offset e attiva uno o pi√π segnali di \textit{bank enable};
+\item ogni \textit{bank enable} attivo individua una delle quattro celle da un byte associate all'offset presente sul bus degli indirizzi in posizione A[31..2]: questo byte sar√† trasferito su un ben preciso byte del bus dati. Chiaramente il numero dei  \textit{bank enable} attivi dipende dal numero di byte del dato da trasferire;
+\item se il dato da trasferire √® composto da byte con diversi valori di offset (dato non allineato), il
+microprocessore non ha scelta e dovr√† effettuare pi√π trasferimenti sul bus; in caso contrario (dato allineato) il trasferimento avviene solamente in un ciclo.
 \end{itemize}
 
-Le seguenti sono le formule per la traduzione dell'indirizzo dato in 2 coordinate e quello fisico (cioË preso "'in senso classico'") e viceversa:
+Le seguenti sono le formule per la traduzione dell'indirizzo dato in 2 coordinate e quello fisico (cio√® preso "'in senso classico'") e viceversa:
 \[
 \begin{gathered}
 IF = \text{Offset} \cdot Numero_{banchi} + BankId \\
@@ -88,7 +88,7 @@ BankId = \operatorname{MOD_{NumeroBanchi}}(IF) \\
 \label{fig:3234bit}
 \end{figure}
 
-In figura \ref{fig:3234bit} viene mostrata la corrispondenza fra l'array di 32 bit che indirizza i 4 GB "'in senso classico'" e la rappresentazione a 34 bit (30 di offset + 4 \textit{bank enable}) del nostro sistema a \textit{bus multibyte}. Chiaramente i 34 bit non possono viaggiare in un bus degli indirizzi da 32 bit: per questo Ë presente un encoder in grado di tradurre l'array dei \textit{bank enable} BE[3..0] in un numero binario di 2 bit. Allo stesso modo, nel nostro Pentium con bus dati a 64 bit (e bus degli indirizzi a 32 bit), abbiamo bisogno di un encoder che prenda in pasto gli 8 \textit{bank enable} (ogni banco occupa 512 KB) e lo traduca nei bit\footnote{Non posseduti dal microprocessore.} A2, A1 e A0 da inserire nel "'classico'" indirizzo da 32 bit (quello che daremmo in una memoria monobanco) come mostrato in figura \ref{fig:banktraduzione64}.
+In figura \ref{fig:3234bit} viene mostrata la corrispondenza fra l'array di 32 bit che indirizza i 4 GB "'in senso classico'" e la rappresentazione a 34 bit (30 di offset + 4 \textit{bank enable}) del nostro sistema a \textit{bus multibyte}. Chiaramente i 34 bit non possono viaggiare in un bus degli indirizzi da 32 bit: per questo √® presente un encoder in grado di tradurre l'array dei \textit{bank enable} BE[3..0] in un numero binario di 2 bit. Allo stesso modo, nel nostro Pentium con bus dati a 64 bit (e bus degli indirizzi a 32 bit), abbiamo bisogno di un encoder che prenda in pasto gli 8 \textit{bank enable} (ogni banco occupa 512 KB) e lo traduca nei bit\footnote{Non posseduti dal microprocessore.} A2, A1 e A0 da inserire nel "'classico'" indirizzo da 32 bit (quello che daremmo in una memoria monobanco) come mostrato in figura \ref{fig:banktraduzione64}.
 
 \begin{figure}[!h]
 \centering
@@ -100,8 +100,8 @@ In figura \ref{fig:3234bit} viene mostrata la corrispondenza fra l'array di 32 b
 \section{E le periferiche?}
 \label{sec:perifericheCacchio}
 
-Per quanto riguarda le periferiche, Ë il \textit{bridge} che si occupa di intercettare pi˘ banchi e interfacciare correttamente il bus di I/O (8 bit) e quello dei dati (64 bit, sempre nel Pentium).
-Nei trasferimenti da bus dati a bus di input/output il bridge funge infatti da multiplexer da 8 bit a 8 vie, mettendo cioË in comunicazione ciascuno degli 8 banchi del bus dati con il bus di I/O. Nei trasferimenti in direzione opposta (da bus di input/output a bus di memoria) il bridge trasferisce il contenuto del bus di I/O sui banchi del bus dati. Di conseguenza, grazie al bridge, la CPU puÚ comunicare con il bus di I/O attraverso qualunque dei suoi banchi del bus dati: questo significa che i dispositivi interfacciati al bus di I/O possono essere mappati a qualunque indirizzo, quindi in particolare a indirizzi adiacenti. Inoltre Ë possibile effettuare trasferimenti in DMA di blocchi di dati contigui (come vedremo in seguito).
+Per quanto riguarda le periferiche, √® il \textit{bridge} che si occupa di intercettare pi√π banchi e interfacciare correttamente il bus di I/O (8 bit) e quello dei dati (64 bit, sempre nel Pentium).
+Nei trasferimenti da bus dati a bus di input/output il bridge funge infatti da multiplexer da 8 bit a 8 vie, mettendo cio√® in comunicazione ciascuno degli 8 banchi del bus dati con il bus di I/O. Nei trasferimenti in direzione opposta (da bus di input/output a bus di memoria) il bridge trasferisce il contenuto del bus di I/O sui banchi del bus dati. Di conseguenza, grazie al bridge, la CPU pu√≤ comunicare con il bus di I/O attraverso qualunque dei suoi banchi del bus dati: questo significa che i dispositivi interfacciati al bus di I/O possono essere mappati a qualunque indirizzo, quindi in particolare a indirizzi adiacenti. Inoltre √® possibile effettuare trasferimenti in DMA di blocchi di dati contigui (come vedremo in seguito).
 
 Per mappare le periferiche si segue dunque lo schema d'indirizzamento riportato in figura \ref{fig:perifericheBanchi}.
 
@@ -112,7 +112,7 @@ Per mappare le periferiche si segue dunque lo schema d'indirizzamento riportato 
 \label{fig:perifericheBanchi}
 \end{figure} 
 
-Si noti che Ë indispensabile porre ogni chip ad un indirizzo allineato (cioË multiplo della sua dimensione).
+Si noti che √® indispensabile porre ogni chip ad un indirizzo allineato (cio√® multiplo della sua dimensione).
 
 \section{Un esempio}
 \label{sec:esempio}
@@ -127,8 +127,8 @@ da un bridge), dispone di un DMAC, un PIC e una porta seriale S1 (un chip 8250).
 \label{fig:esempioPerifericheMappate}
 \end{figure}
 
-In figura \ref{fig:esempioPerifericheMappate} viene mostrata una possibile scelta di \textit{mapping} delle periferiche in I/O. Si noti la presenza di 8 banchi (ognuno da 8 KB per un totale di 64 KB di spazio di indirizzamento in I/O). A 100H Ë stato mappata la seriale (8 byte, si veda la figura \ref{fig:mux8vie} per uno "'zoom'" dello schema d'interfacciamento fra essa e la memoria centrale tramite il bridge), a 200H il PIC (2 byte) e a 300H il DMA Controller (16 byte): tutti gli indirizzi sono quindi allineati!
-Volendo, ad esempio, accedere al registro IER, l'indirizzo sar‡:
+In figura \ref{fig:esempioPerifericheMappate} viene mostrata una possibile scelta di \textit{mapping} delle periferiche in I/O. Si noti la presenza di 8 banchi (ognuno da 8 KB per un totale di 64 KB di spazio di indirizzamento in I/O). A 100H √® stato mappata la seriale (8 byte, si veda la figura \ref{fig:mux8vie} per uno "'zoom'" dello schema d'interfacciamento fra essa e la memoria centrale tramite il bridge), a 200H il PIC (2 byte) e a 300H il DMA Controller (16 byte): tutti gli indirizzi sono quindi allineati!
+Volendo, ad esempio, accedere al registro IER, l'indirizzo sar√†:
 \begin{verbatim}
 A15 A14 A13 A12 | A11 A10 A9 A8 | A7 A6 A5 A4 | A3 A2 A1 A0
   0   0   0   0 |   0   0  0  1 |  0  0  0  0 |  0  0  0  1

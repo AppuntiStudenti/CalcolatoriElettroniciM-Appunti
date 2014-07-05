@@ -4,24 +4,24 @@
 \section{Cosa determina le prestazioni di un calcolatore}
 \label{sec:cosaDeterminaPrestazioni}
 
-Un'architettura di elaborazione\footnote{Faremo costantemente riferimento al modello basato sulla macchina di Von Neumann.} Ë costituita da tre elementi fondamentali:
+Un'architettura di elaborazione\footnote{Faremo costantemente riferimento al modello basato sulla macchina di Von Neumann.} √® costituita da tre elementi fondamentali:
 \begin{itemize}
 \item l'\textbf{ISA} (\textit{Instruction Stack Architecture}), ovvero il set di istruzioni computabile dalla macchina;
-\item la \textbf{struttura} (v. esempio in figura \ref{fig:strutturaSchematica}), cioË l'insieme di blocchi interconnessi fra loro che realizza il principio di funzionamento del sistema;
+\item la \textbf{struttura} (v. esempio in figura \ref{fig:strutturaSchematica}), cio√® l'insieme di blocchi interconnessi fra loro che realizza il principio di funzionamento del sistema;
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.8\columnwidth]{img/strutturaSchematica}
 \caption{Una schematizzazione essenziale della struttura di un calcolatore}
 \label{fig:strutturaSchematica}
 \end{figure}
-\item la \textbf{realizzazione circuitale} del sistema, cioË com'Ë fatto "'elettronicamente'".
+\item la \textbf{realizzazione circuitale} del sistema, cio√® com'√® fatto "'elettronicamente'".
 \end{itemize}
 
-Questi tre elementi impattano significativamente sulle prestazioni del nostro elaboratore, quantificabili attraverso il parametro $CPU_{time}$, cioË il tempo che impiega la macchina ad eseguire un certo \textit{task}:
+Questi tre elementi impattano significativamente sulle prestazioni del nostro elaboratore, quantificabili attraverso il parametro $CPU_{time}$, cio√® il tempo che impiega la macchina ad eseguire un certo \textit{task}:
 \[
 CPU_{time} = N_{istruzioni} \cdot CPI_{medio} \cdot T_{clock}
 \]
-Il numero di istruzioni ($N_{istruzioni}$) dipende dell'ISA, il $CPI_{medio}$ dalla struttura hardware del nostro sistema, il $T_{clock}$ (periodo di clock) dalla tecnologia di realizzazione (cioË dall'elettronica sottostante la fabbricazione dell'hardware).
+Il numero di istruzioni ($N_{istruzioni}$) dipende dell'ISA, il $CPI_{medio}$ dalla struttura hardware del nostro sistema, il $T_{clock}$ (periodo di clock) dalla tecnologia di realizzazione (cio√® dall'elettronica sottostante la fabbricazione dell'hardware).
 
 Tecnologia e struttura interna evolvono nell'ottica di aumentare le prestazioni e ridurre il consumo/operazione
 elementare. In particolare, si cerca di trovare il miglior compromesso fra potenza e consumo tramite i seguenti accorgimenti:
@@ -42,15 +42,15 @@ CPU.
 \subsection{L'ISA}
 \label{sec:isa}
 
-Il linguaggio macchina (L.M.) (detto anche \textit{instruction set architecture} - ISA) Ë il livello dell'architettura della CPU visibile a chi sviluppa i compilatori e a chi programma in \textit{assembler}. L'ISA Ë costituita dall'insieme delle istruzioni eseguibili e dal loro formato binario. Con le istruzioni del linguaggio macchina si accede alle risorse interne del calcolatore (memoria, registri, tabelle e descrittori, variabili di stato, \textit{flag}, etc\ldots). Tra le risorse interne al calcolatore, solo quelle accessibili attraverso l'ISA possono essere rese visibili e controllabili dal software.
+Il linguaggio macchina (L.M.) (detto anche \textit{instruction set architecture} - ISA) √® il livello dell'architettura della CPU visibile a chi sviluppa i compilatori e a chi programma in \textit{assembler}. L'ISA √® costituita dall'insieme delle istruzioni eseguibili e dal loro formato binario. Con le istruzioni del linguaggio macchina si accede alle risorse interne del calcolatore (memoria, registri, tabelle e descrittori, variabili di stato, \textit{flag}, etc\ldots). Tra le risorse interne al calcolatore, solo quelle accessibili attraverso l'ISA possono essere rese visibili e controllabili dal software.
 
-Per comodit‡ in generale non rappresenteremo le istruzioni macchina con zeri e uni (cioË come vengono viste dal calcolatore), nÈ con cifre esadecimali in forma simbolica; il linguaggio che useremo per rappresentare simbolicamente le istruzioni del linguaggio macchina Ë l'\textit{assembler}.
+Per comodit√† in generale non rappresenteremo le istruzioni macchina con zeri e uni (cio√® come vengono viste dal calcolatore), n√© con cifre esadecimali in forma simbolica; il linguaggio che useremo per rappresentare simbolicamente le istruzioni del linguaggio macchina √® l'\textit{assembler}.
 
 Le istruzioni prese in pasto da un calcolatore\footnote{In questo paragrafo faremo riferimento all'Intel 8086/8088 oppure al DLX.} hanno una struttura del tipo:
 \begin{verbatim}
 ADD   ALFA[DI+BX], AL
 \end{verbatim}
-In questo caso DI+BX Ë l'indice di ALFA, che Ë un vettore: l'operazione effettuata consiste nel sommare alla quantit‡ presente in ALFA[DI+BX] (operando in memoria) la quantit‡ AL. Con ALFA[DI+BX] indichiamo simbolicamente una posizione in memoria; la memoria, nell'8088, Ë di 1 MB ($20^{20}$ bit) ed Ë "'puntata'" da DS (\textit{data segment}, vedi fig. \ref{fig:DSmemoria}), vettore di 20 bit con i 4 bit meno significativi posti a 0: questo significa che Ë possibile indirizzare le celle di memoria, ampie $2^4 = 16$ byte ciascuna e dette \textit{paragrafi}, con soli 16 bit (4 cifre esadecimali) dei 20 totali.
+In questo caso DI+BX √® l'indice di ALFA, che √® un vettore: l'operazione effettuata consiste nel sommare alla quantit√† presente in ALFA[DI+BX] (operando in memoria) la quantit√† AL. Con ALFA[DI+BX] indichiamo simbolicamente una posizione in memoria; la memoria, nell'8088, √® di 1 MB ($20^{20}$ bit) ed √® "'puntata'" da DS (\textit{data segment}, vedi fig. \ref{fig:DSmemoria}), vettore di 20 bit con i 4 bit meno significativi posti a 0: questo significa che √® possibile indirizzare le celle di memoria, ampie $2^4 = 16$ byte ciascuna e dette \textit{paragrafi}, con soli 16 bit (4 cifre esadecimali) dei 20 totali.
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.7\columnwidth]{img/DSmemoria}
@@ -58,7 +58,7 @@ In questo caso DI+BX Ë l'indice di ALFA, che Ë un vettore: l'operazione effettua
 \label{fig:DSmemoria}
 \end{figure}
 
-Un'altra possibile suddivisione logica della memoria Ë quella in pagine, ovvero in $2^8$ blocchi di $2^{12}$ byte (vedi fig. \ref{fig:pagineParagrafi}).
+Un'altra possibile suddivisione logica della memoria √® quella in pagine, ovvero in $2^8$ blocchi di $2^{12}$ byte (vedi fig. \ref{fig:pagineParagrafi}).
 
 \begin{figure}[!h]
 \centering
@@ -70,15 +70,15 @@ Un'altra possibile suddivisione logica della memoria Ë quella in pagine, ovvero 
 Si noti che la divisione in paragrafi e in pagine implica:
 \begin{itemize}
 \item un metodo di indirizzamento \textit{base} (indirizzo iniziale della cella di memoria) + \textit{offset} (indirizzo all'interno della cella);
-\item che Ë possibile far sÏ che l'indirizzo di un blocco sia sempre un multiplo della dimensione del blocco stesso (\textit{indirizzi allineati}); questo comporta che, se prendiamo in considerazione il DLX (4 GigaByte di memoria da indirizzare, indirizzi di 32 bit), non necessiteremo di un sommatore a 32 bit per il calcolo dell'indirizzo "'effettivo'" (\textit{base} + \textit{offset}), potendo furbescamente sfruttare il concatenamento di \textit{blockID} + \textit{offset}. \\
+\item che √® possibile far s√¨ che l'indirizzo di un blocco sia sempre un multiplo della dimensione del blocco stesso (\textit{indirizzi allineati}); questo comporta che, se prendiamo in considerazione il DLX (4 GigaByte di memoria da indirizzare, indirizzi di 32 bit), non necessiteremo di un sommatore a 32 bit per il calcolo dell'indirizzo "'effettivo'" (\textit{base} + \textit{offset}), potendo furbescamente sfruttare il concatenamento di \textit{blockID} + \textit{offset}. \\
 Esempio (DLX, $n=32$, indirizzi allineati): devo accedere a una cella di memoria individuata dal \textit{blockID} che, per definizione, ha i $k$ bit meno significativi tutti a zero, e ho bisogno dell'informazione, che chiameremo PIPPO, presente ad un certo \textit{offset} lungo $k$ bit. Per trovare l'indirizzo di PIPPO basta una semplice operazione di concatenamento:
 \begin{verbatim}
 ind(PIPPO) [n bit] = Block_ID [n-k bit] ## Offset [k bit]
 \end{verbatim}
-Se invece i blocchi non sono allineati (es. 8088, dove sia la base che l'offset sono a 16 bit, con un DS di 20 bit), oppure se l'offset Ë maggiore della dimensione del blocco, il sommatore Ë imprescindibile.
+Se invece i blocchi non sono allineati (es. 8088, dove sia la base che l'offset sono a 16 bit, con un DS di 20 bit), oppure se l'offset √® maggiore della dimensione del blocco, il sommatore √® imprescindibile.
 \end{itemize}
 
-Nell'8088 l'offset Ë calcolato dinamicamente ed Ë la somma di BX + DI + ALFA (vedi fig. \ref{fig:effectiveAddress}).
+Nell'8088 l'offset √® calcolato dinamicamente ed √® la somma di BX + DI + ALFA (vedi fig. \ref{fig:effectiveAddress}).
 
 \begin{figure}[!h]
 \centering
@@ -114,7 +114,7 @@ ADD R5, R6, R7
 \end{verbatim}
 Per prelevare e depositare in memoria ci si appoggia quindi alle istruzioni di LOAD e STORE. \\
 
-L'architettura influisce tantissimo sia sulle prestazioni che sul generale funzionamento del calcolatore: infine, con una stessa ISA possono sussistere strutture diversissime (ad esempio puÚ essere pi˘ o meno realizzabile la \textit{pipeline} piuttosto che la struttura ad esecuzione sequenziale, etc\ldots).
+L'architettura influisce tantissimo sia sulle prestazioni che sul generale funzionamento del calcolatore: infine, con una stessa ISA possono sussistere strutture diversissime (ad esempio pu√≤ essere pi√π o meno realizzabile la \textit{pipeline} piuttosto che la struttura ad esecuzione sequenziale, etc\ldots).
 
 \section{Tipi di istruzioni}
 \label{sec:tipiIstruzioni}
@@ -154,25 +154,25 @@ LB    R5, 20(R6)
 Questa istruzione\footnote{Equivalente a 
 \[
 R5_{[7\ldots 0]} \Leftarrow M[R6+20]
-\]} mette in R5 il contenuto della cella di memoria il cui indirizzo Ë il contenuto del registro R6 incrementato di 20.
+\]} mette in R5 il contenuto della cella di memoria il cui indirizzo √® il contenuto del registro R6 incrementato di 20.
 Oppure:
 \begin{verbatim}
 LDRS   ALFA(R6)
 \end{verbatim}
-ALFA Ë detta \textit{parte fissa}, mentre il contenuto di R6 Ë la \textit{parte variabile}: quel che si fa Ë accedere all'R6-simo elemento del vettore ALFA ed effettuarne il \textit{load}.
-\item \textit{Branch condizionate}, ovvero salto \textbf{condizionato}. Esempio\footnote{Si tratta di una \textit{Branch Not Equal Zero}: in pratica, se in PIPPO vi Ë il valore 3, dobbiamo andare a PC+3 (per questo si dice che Ë un'istruzione \textit{PC-relative}).}
+ALFA √® detta \textit{parte fissa}, mentre il contenuto di R6 √® la \textit{parte variabile}: quel che si fa √® accedere all'R6-simo elemento del vettore ALFA ed effettuarne il \textit{load}.
+\item \textit{Branch condizionate}, ovvero salto \textbf{condizionato}. Esempio\footnote{Si tratta di una \textit{Branch Not Equal Zero}: in pratica, se in PIPPO vi √® il valore 3, dobbiamo andare a PC+3 (per questo si dice che √® un'istruzione \textit{PC-relative}).}
 \begin{verbatim}
 BNEZ   R5, PIPPO
 \end{verbatim}
-Altri esempi (\textit{Branch Not Equal Zero})\footnote{Se R10 Ë diverso da 0 saltiamo a PIPPO.}:
+Altri esempi (\textit{Branch Not Equal Zero})\footnote{Se R10 √® diverso da 0 saltiamo a PIPPO.}:
 \begin{verbatim}
 BNEQZ   R10, PIPPO
 \end{verbatim}
-Che Ë equivalente a (\textit{Jump Equal})\footnote{Se R5=R6 saltiamo a PIPPO.}
+Che √® equivalente a (\textit{Jump Equal})\footnote{Se R5=R6 saltiamo a PIPPO.}
 \begin{verbatim}
 JEQ    R5, R6, PIPPO
 \end{verbatim}
-se R10 Ë stato ricavato con questa istruzione (\textit{Set Equal Zero})\footnote{Mettiamo in R10 il risultato del confronto fra gli operandi R5 e R6.}:
+se R10 √® stato ricavato con questa istruzione (\textit{Set Equal Zero})\footnote{Mettiamo in R10 il risultato del confronto fra gli operandi R5 e R6.}:
 \begin{verbatim}
 SEQ    R10, R5, R6
 \end{verbatim}
@@ -183,7 +183,7 @@ SEQ    R10, R5, R6
 \begin{verbatim}
 ADDI   R1, R2, 3
 \end{verbatim}
-Per questo tipo di operazioni viene coinvolta la ALU, che prende in pasto due operandi da 32 bit: siccome l'operando immediato Ë una quantit‡ a 16 bit, i rimanenti bit sono rappresentati dal bit del segno ripetuto 16 volte.
+Per questo tipo di operazioni viene coinvolta la ALU, che prende in pasto due operandi da 32 bit: siccome l'operando immediato √® una quantit√† a 16 bit, i rimanenti bit sono rappresentati dal bit del segno ripetuto 16 volte.
 \end{itemize}
 
 \subsection{Di tipo J}
@@ -193,7 +193,7 @@ Si tratta di istruzioni di \textit{jump} (salto \textbf{incondizionato}), ancora
 \[
 -2^{25} \Rightarrow 2^{25}-1
 \]
-Quando Ë necessario effettuare un salto (\textit{jump}) l'indirizzo di ritorno viene salvato nel registro R31 ma, se per qualche motivo nel frattempo venisse eseguita un'altra procedura, l'indirizzo di ritorno in R31 verrebbe sovrascritto e noi saremmo fregati. Quanto detto si riflette nell'assenza del cosiddetto \textit{nesting}, cosicchÈ deve curarsene il programmatore (facendo uso, ad esempio, di altri registri come R30). Se teniamo conto di questo aspetto, come ci regoliamo con gli \textit{interrupt}? Gli \textit{interrupt} sono chiamate a procedure "'implicite'", scatenate da un evento o un dispositivo esterno (come ad esempio una periferica): l'indirizzo di ritorno, in questo caso, non viene salvato in R31 bensÏ in IAR(\textit{Interrupt Address Register}). 
+Quando √® necessario effettuare un salto (\textit{jump}) l'indirizzo di ritorno viene salvato nel registro R31 ma, se per qualche motivo nel frattempo venisse eseguita un'altra procedura, l'indirizzo di ritorno in R31 verrebbe sovrascritto e noi saremmo fregati. Quanto detto si riflette nell'assenza del cosiddetto \textit{nesting}, cosicch√© deve curarsene il programmatore (facendo uso, ad esempio, di altri registri come R30). Se teniamo conto di questo aspetto, come ci regoliamo con gli \textit{interrupt}? Gli \textit{interrupt} sono chiamate a procedure "'implicite'", scatenate da un evento o un dispositivo esterno (come ad esempio una periferica): l'indirizzo di ritorno, in questo caso, non viene salvato in R31 bens√¨ in IAR(\textit{Interrupt Address Register}). 
 IAR e R31 sono quindi i due registri deputati al salvataggio degli indirizzi di ritorno.
 
 Come facciamo per regolare il ritorno dalle eccezioni (ad es. divisione per zero, al sopraggiungere della quale la CPU si arrabbia e si sfoga sull'utente generando - appunto - un'eccezione)? Esiste un'istruzione ad-hoc

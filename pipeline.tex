@@ -8,9 +8,9 @@
 \label{fig:principioPipeline}
 \end{figure}
 
-Il \textit{pipelining} Ë oggi la principale tecnica di base impiegata per rendere performante una CPU. L'idea alla base del \textit{pipelining} Ë generale, e trova applicazione in molteplici settori dell'industria (linee di produzione, oleodotti, etc\ldots). Prendiamo in considerazione un generico sistema S che debba e eseguire alcune attivit‡ A (vedi fig. \ref{fig:principioPipeline}). Si chiama \textit{latenza (latency)} il tempo che intercorre fra l'inizio ed il completamento della generica attivit‡ A, mentre il \textit{throughput} Ë frequenza con cui vengono completate le attivit‡.
+Il \textit{pipelining} √® oggi la principale tecnica di base impiegata per rendere performante una CPU. L'idea alla base del \textit{pipelining} √® generale, e trova applicazione in molteplici settori dell'industria (linee di produzione, oleodotti, etc\ldots). Prendiamo in considerazione un generico sistema S che debba e eseguire alcune attivit√† A (vedi fig. \ref{fig:principioPipeline}). Si chiama \textit{latenza (latency)} il tempo che intercorre fra l'inizio ed il completamento della generica attivit√† A, mentre il \textit{throughput} √® frequenza con cui vengono completate le attivit√†.
 
-Il \textit{pipelining} non riduce il tempo necessario al completamento di una singola attivit‡, tuttavia incrementa il \textit{throughput} tante volte quanti sono gli stati della \textit{pipeline} (ma solo in un caso ideale!!).
+Il \textit{pipelining} non riduce il tempo necessario al completamento di una singola attivit√†, tuttavia incrementa il \textit{throughput} tante volte quanti sono gli stati della \textit{pipeline} (ma solo in un caso ideale!!).
 
 \begin{figure}[!h]
 \centering
@@ -21,17 +21,17 @@ Il \textit{pipelining} non riduce il tempo necessario al completamento di una si
 
 Nella \textit{pipeline} del DLX sono presenti cinque fasi principali (ogni fase rappresenta un particolare stadio, vedi fig. \ref{fig:pipelineDLX}):
 \begin{itemize}
-\item IF: \textit{Instruction Fetch}. Si legge in memoria qual Ë la prossima istruzione da eseguire;
+\item IF: \textit{Instruction Fetch}. Si legge in memoria qual √® la prossima istruzione da eseguire;
 \item ID: \textit{Instruction Decode}. Si leggono gli operandi sorgenti e si decodifica l'istruzione per capire cosa effettivamente dev'essere fatto;
 \item EX: \textit{Execute}. In tale fase viene coinvolta la ALU e vengono effettuate le operazioni richieste dall'istruzione.
 \item MEM: \textit{Memory Access}. Si memorizzano (eventualmente) i risultati della fase di EX.
 \item WB: \textit{Write Back}. Si scrivono i risultati nel \textit{register file}\footnote{Memoria presente all'interno della CPU.}.
 
-Purtroppo una \textit{pipeline} Ë suscettibile a stalli (vedi fig. \ref{fig:stallo}): gli stalli si generano quando si necessita di un dato che deve tuttavia ancora essere aggiornato con il suo corretto valore. Con gli stalli abbiamo quindi momenti in cui la CPU Ë bloccata (\textit{pipeline bloccante}) e impossibilitata ad eseguire nuove fasi delle varie istruzioni in quanto manca uno degli operandi: a causa di ciÚ, il $CPU_{time}$ della \textit{pipeline} non Ë pari al numero di istruzioni (come nel caso ideale), bensÏ pari a:
+Purtroppo una \textit{pipeline} √® suscettibile a stalli (vedi fig. \ref{fig:stallo}): gli stalli si generano quando si necessita di un dato che deve tuttavia ancora essere aggiornato con il suo corretto valore. Con gli stalli abbiamo quindi momenti in cui la CPU √® bloccata (\textit{pipeline bloccante}) e impossibilitata ad eseguire nuove fasi delle varie istruzioni in quanto manca uno degli operandi: a causa di ci√≤, il $CPU_{time}$ della \textit{pipeline} non √® pari al numero di istruzioni (come nel caso ideale), bens√¨ pari a:
 \[
 CPU_{time} = 4 + N_{istruzioni}  + N_{stalli}
 \]
-Si noti che l'addendo $4$ si riferisce al numero di clock necessari a riempire la \textit{pipeline}. Risulta evidente che il numero di stalli influisce notevolmente sulle prestazioni: pi˘ stalliamo e pi˘ clock impieghiamo a completare una certa serie di operazioni. Infatti, se calcoliamo il cosiddetto CPI (\textit{Clock Per Instruction}) abbiamo:
+Si noti che l'addendo $4$ si riferisce al numero di clock necessari a riempire la \textit{pipeline}. Risulta evidente che il numero di stalli influisce notevolmente sulle prestazioni: pi√π stalliamo e pi√π clock impieghiamo a completare una certa serie di operazioni. Infatti, se calcoliamo il cosiddetto CPI (\textit{Clock Per Instruction}) abbiamo:
 \[
 CPI_{medio}=\dfrac{4+N_{istruzioni}+N_{Stalli}}{N_{istruzioni}} ~~~
 \mathop  \simeq \limits_{N_{Istruzioni} {\text{ alto}}} 
@@ -51,8 +51,8 @@ CPI_{medio}=\dfrac{4+N_{istruzioni}+N_{Stalli}}{N_{istruzioni}} ~~~
 \section{Miglioramenti alla \textit{pipeline}}
 \label{sec:pipelineMiglioramenti}
 
-Una possibile scelta per migliorare il funzionamento della \textit{pipeline} puÚ essere quella di utilizzare pi˘ unit‡ funzionali per ogni stadio (ad esempio pi˘ ALU). In tal caso si parla di \textit{macchina superscalare}.
-Si puÚ anche pensare di evitare lo stallo eseguendo, mentre un dato richiesto deve ancora aggiornarsi, un'istruzione successiva priva di \textit{alee} ("'dipendenze'"): questo accorgimento rende la pipeline\textit{ non bloccante}. 
+Una possibile scelta per migliorare il funzionamento della \textit{pipeline} pu√≤ essere quella di utilizzare pi√π unit√† funzionali per ogni stadio (ad esempio pi√π ALU). In tal caso si parla di \textit{macchina superscalare}.
+Si pu√≤ anche pensare di evitare lo stallo eseguendo, mentre un dato richiesto deve ancora aggiornarsi, un'istruzione successiva priva di \textit{alee} ("'dipendenze'"): questo accorgimento rende la pipeline\textit{ non bloccante}. 
 Esempio:
 \begin{verbatim}
 ADD   R15, R16, R17
@@ -61,13 +61,13 @@ AND   R15, R16, R17
 \end{verbatim}
 Purtroppo qui non posso fare a meno di stallare, tuttavia posso eseguire eventuali istruzioni successive intanto che le tre illustrate vengono eseguite (OOO Execution, \textit{Out Of Order Execution}).
 
-C'Ë inoltre da tener presente un aspetto importante: non tutti gli stadi vengono impegnati per un singolo clock. Istruzioni aritmetiche coi \textit{floating point} e/o altri tipi di operazioni piuttosto complesse possono richiedere, ad esempio, una permanenza nello stadio EX molto pi˘ duratura rispetto ad altre istruzioni.
+C'√® inoltre da tener presente un aspetto importante: non tutti gli stadi vengono impegnati per un singolo clock. Istruzioni aritmetiche coi \textit{floating point} e/o altri tipi di operazioni piuttosto complesse possono richiedere, ad esempio, una permanenza nello stadio EX molto pi√π duratura rispetto ad altre istruzioni.
 Risulta quindi importante scoprire quale possa essere un buon metodo per rilevare possibili dipendenze, per risolvere le \textit{alee} e per individuare quindi le possibili situazioni di incoerenza fra i dati. Ad esempio, se prendiamo in considerazione le seguenti istruzioni
 \begin{verbatim}
 SUB   R15, R16, R17
 AND   R25, R26, R15
 \end{verbatim}
-Questa dicitura Ë equivalente a:
+Questa dicitura √® equivalente a:
 \begin{verbatim}
 R25 = R26 + (R16 - R17)
 \end{verbatim} 
@@ -77,7 +77,7 @@ R25 = R26 + (R16 - R17)
 \caption{}
 \label{fig:pipelineEsempio1}
 \end{figure}
-In questo caso il risultato della SUB Ë necessario alla AND ma non vi sono alee se tali istruzioni vengono eseguite in sequenza (vedi fig. \ref{fig:pipelineEsempio1}): infatti Ë possibile retrazionare il registro EX-MEM verso la ALU (vedi fig. \ref{fig:retroazionamentoMux}).
+In questo caso il risultato della SUB √® necessario alla AND ma non vi sono alee se tali istruzioni vengono eseguite in sequenza (vedi fig. \ref{fig:pipelineEsempio1}): infatti √® possibile retrazionare il registro EX-MEM verso la ALU (vedi fig. \ref{fig:retroazionamentoMux}).
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.6\columnwidth]{img/retroazionamentoMux}
@@ -96,21 +96,21 @@ Risulta quindi necessaria una \textit{Hazard Detection Unit} per scoprire se ci 
 \section{\textit{Pipeline} con stadi a ciclo singolo}
 \label{sec:pipelineStadiCicloSingolo}
 
-Prendiamo in considerazione una \textit{pipeline} a ciclo singolo, come quella in figura \ref{fig:pipelineDLX}. Supponendo che il ritardo fra i diversi stadi sia pari a $t_{si}$ la frequenza di clock Ë vincolata dalla seguente relazione:
+Prendiamo in considerazione una \textit{pipeline} a ciclo singolo, come quella in figura \ref{fig:pipelineDLX}. Supponendo che il ritardo fra i diversi stadi sia pari a $t_{si}$ la frequenza di clock √® vincolata dalla seguente relazione:
 \[
 t_{ck} \geq 
 \mathop {\max }\limits_i \left( {t_{si}  + \underbrace {t_{CHOV\max } }_{{\text{CHOV  = }}{\text{ clock high out valid}}} + \underbrace {t_{SU\min } }_{{\text{SU  =  set up}}}} \right)
 \]
 In questa relazione
 \begin{itemize}
-\item $t_{CHOV\max}$ Ë il massimo ritardo dei registri prima che il dato sia valido in uscita;
-\item $t_{SU\min}$ Ë il tempo di \textit{set-up} minimo (il dato deve rimanere costante).
+\item $t_{CHOV\max}$ √® il massimo ritardo dei registri prima che il dato sia valido in uscita;
+\item $t_{SU\min}$ √® il tempo di \textit{set-up} minimo (il dato deve rimanere costante).
 \end{itemize}
 
-E se volessimo andare pi˘ forte con la frequenza di clock (e quindi abbassare $t_{ck}$)? Abbiamo due possibilit‡ d'azione:
+E se volessimo andare pi√π forte con la frequenza di clock (e quindi abbassare $t_{ck}$)? Abbiamo due possibilit√† d'azione:
 \begin{enumerate}
 \item Adottiamo una tecnologia migliore.
-\item A parit‡ di tecnologia poniamo dei registri all'interno di ogni stato (architettura \textit{Super-Pipelined}, vedi fig. \ref{fig:superpipeline}).
+\item A parit√† di tecnologia poniamo dei registri all'interno di ogni stato (architettura \textit{Super-Pipelined}, vedi fig. \ref{fig:superpipeline}).
 \end{enumerate}
 \begin{figure}[!h]
 \centering
@@ -125,9 +125,9 @@ E se volessimo andare pi˘ forte con la frequenza di clock (e quindi abbassare $t
 \subsection{Alea strutturale}
 \label{sec:aleaStrutturale}
 
-Esistono operazioni (come la FDIV, FMUL o FADD, che agiscono su numeri \textit{float}) in grado di impegnare lo stadio EX per molti cicli di clock, compromettendo con reiterati stalli le prestazioni della macchina. Si parla, in questo caso, di \textit{alea strutturale}: a causa degli stalli indotti da tale tipo di alea, uno stadio impegnato per $n$ cicli Ë in grado di bloccare la \textit{pipeline} per $n-1$ periodi di clock (fino, cioË, al definitivo completamento del calcolo da effettuare). Molte alee strutturali possono quindi far drammaticamente crollare la velocit‡ della nostra \textit{pipeline} con stadio a ciclo singolo mentre, viceversa, se esse non sussistessero sarebbe possibile effettuare molte pi˘ istruzioni. Supponendo ad esempio di dover fare 1 DIV (40 clock ciascuna), 10 FADD (4 clock ciascuna) e 40 AND (1 clock ciascuna), impiegheremmo $\{\max \left( {1 \cdot 40,10 \cdot 4,40 \cdot 1} \right)\} = 40$ clock contro i $40+10+1=51$ dei quali avremmo bisogno nel caso di unica unit‡ funzionale: lo \textit{speed-up} della \textit{pipeline} multiciclo Ë quindi notevole. 
+Esistono operazioni (come la FDIV, FMUL o FADD, che agiscono su numeri \textit{float}) in grado di impegnare lo stadio EX per molti cicli di clock, compromettendo con reiterati stalli le prestazioni della macchina. Si parla, in questo caso, di \textit{alea strutturale}: a causa degli stalli indotti da tale tipo di alea, uno stadio impegnato per $n$ cicli √® in grado di bloccare la \textit{pipeline} per $n-1$ periodi di clock (fino, cio√®, al definitivo completamento del calcolo da effettuare). Molte alee strutturali possono quindi far drammaticamente crollare la velocit√† della nostra \textit{pipeline} con stadio a ciclo singolo mentre, viceversa, se esse non sussistessero sarebbe possibile effettuare molte pi√π istruzioni. Supponendo ad esempio di dover fare 1 DIV (40 clock ciascuna), 10 FADD (4 clock ciascuna) e 40 AND (1 clock ciascuna), impiegheremmo $\{\max \left( {1 \cdot 40,10 \cdot 4,40 \cdot 1} \right)\} = 40$ clock contro i $40+10+1=51$ dei quali avremmo bisogno nel caso di unica unit√† funzionale: lo \textit{speed-up} della \textit{pipeline} multiciclo √® quindi notevole. 
 
-Per ridurre o eliminare gli stalli si puÚ quindi scegliere di implementare \textit{pipeline} con pi˘ unit‡ multiciclo in parallelo all'unit‡ di esecuzione intera (vedi fig. \ref{fig:multicycle}). In questo modo Ë possibile effettuare operazioni diverse in parallelo, guadagnando notevolmente in prestazioni: 
+Per ridurre o eliminare gli stalli si pu√≤ quindi scegliere di implementare \textit{pipeline} con pi√π unit√† multiciclo in parallelo all'unit√† di esecuzione intera (vedi fig. \ref{fig:multicycle}). In questo modo √® possibile effettuare operazioni diverse in parallelo, guadagnando notevolmente in prestazioni: 
 
 \begin{figure}[!h]
 \centering
@@ -146,7 +146,7 @@ Per ridurre o eliminare gli stalli si puÚ quindi scegliere di implementare \text
 \subsection{Alea di dato, alee WAW, WAR, RAW}
 \label{sec:aleaDato}
 
-Di parla di \textit{alea di dato} (o \textit{alea RAW}, \textit{Read After Write}\footnote{Leggendo oltre si capir‡ anche il perchÈ di questa denominazione: devo infatti leggere il nuovo dato dopo averlo scritto (calcolato).}) quando, per proseguire, si ha bisogno di un dato che sta per essere calcolato ma impiega molti clock costringendoci ad aspettare. Questo problema puÚ essere parzialmente risolto con l'accelerazione apportata dalla \textit{pipeline multiciclo} (vedi par. \ref{sec:aleaStrutturale}), tuttavia Ë possibile fare anche di meglio: si puÚ infatti ovviare al problema eseguendo le istruzioni fuori ordine (OOO = \textit{Out Of Order}), effettuando cioË istruzioni successive a quella che sarebbe obbligatorio fare se agissimo in maniera perfettamente sequenziale nel mentre il dato di cui abbiamo bisogno viene calcolato\footnote{"'Devo aspettare che mi arrivi il dato? Nel frattempo faccio altro, sennÚ starei lÏ ad oziare.'"}.
+Di parla di \textit{alea di dato} (o \textit{alea RAW}, \textit{Read After Write}\footnote{Leggendo oltre si capir√† anche il perch√© di questa denominazione: devo infatti leggere il nuovo dato dopo averlo scritto (calcolato).}) quando, per proseguire, si ha bisogno di un dato che sta per essere calcolato ma impiega molti clock costringendoci ad aspettare. Questo problema pu√≤ essere parzialmente risolto con l'accelerazione apportata dalla \textit{pipeline multiciclo} (vedi par. \ref{sec:aleaStrutturale}), tuttavia √® possibile fare anche di meglio: si pu√≤ infatti ovviare al problema eseguendo le istruzioni fuori ordine (OOO = \textit{Out Of Order}), effettuando cio√® istruzioni successive a quella che sarebbe obbligatorio fare se agissimo in maniera perfettamente sequenziale nel mentre il dato di cui abbiamo bisogno viene calcolato\footnote{"'Devo aspettare che mi arrivi il dato? Nel frattempo faccio altro, senn√≤ starei l√¨ ad oziare.'"}.
 
 \begin{figure}[!h]
 \centering
@@ -155,10 +155,10 @@ Di parla di \textit{alea di dato} (o \textit{alea RAW}, \textit{Read After Write
 \label{fig:aleaDato}
 \end{figure}
 
-Attenzione! Non si possono invertire le istruzioni a cuor leggero: si rischia infatti di cadere nello stesso errore dal quale cerchiamo di sfuggire, eseguendo cioË istruzioni non effettuabili avendo noi bisogno del dato aggiornato (che Ë in calcolo)! Il completamento fuori ordine puÚ inoltre rendere imprecisa la gestione delle
-eccezioni; ne consegue una esecuzione non corretta del codice, con possibilit‡ di perdere informazioni in modo irrecuperabile. Da qui la necessit‡ di un metodo per capire se sia possibile invertire l'esecuzione di due particolari operazioni, di una modalit‡ - ovvero - di \emph{estrarre il parallelismo intrinseco del codice}\footnote{Ooooooohhh... :-o} \footnote{Detto anche ILP, \textit{Instruction Level Parallelism}.}: in soldoni, devo poter estrarre le dipendenze, le quali hanno tre modi di manifestarsi:
+Attenzione! Non si possono invertire le istruzioni a cuor leggero: si rischia infatti di cadere nello stesso errore dal quale cerchiamo di sfuggire, eseguendo cio√® istruzioni non effettuabili avendo noi bisogno del dato aggiornato (che √® in calcolo)! Il completamento fuori ordine pu√≤ inoltre rendere imprecisa la gestione delle
+eccezioni; ne consegue una esecuzione non corretta del codice, con possibilit√† di perdere informazioni in modo irrecuperabile. Da qui la necessit√† di un metodo per capire se sia possibile invertire l'esecuzione di due particolari operazioni, di una modalit√† - ovvero - di \emph{estrarre il parallelismo intrinseco del codice}\footnote{Ooooooohhh... :-o} \footnote{Detto anche ILP, \textit{Instruction Level Parallelism}.}: in soldoni, devo poter estrarre le dipendenze, le quali hanno tre modi di manifestarsi:
 \begin{itemize}
-\item \textbf{dipendenza di dato}: gi‡ vista poco sopra (par. \ref{sec:aleaDato});
+\item \textbf{dipendenza di dato}: gi√† vista poco sopra (par. \ref{sec:aleaDato});
 \item \textbf{dipendenza di nome}: due istruzioni usano lo stesso registro ma senza passaggio di dati;
 \item \textbf{dipendenza di controllo}: caso suddivisibile in \textit{antidipendenza}, che si verifica "'anticipando'" un'istruzione e rischiando quindi di scrivere su un registro coinvolto in un'operazione precedente, come nel seguente codice
 \begin{verbatim}
@@ -172,10 +172,10 @@ FDIV    F5, F1, F1
 \end{verbatim}
 
 L'antidipendenza si manifesta nella cosiddetta alea \textit{Write After Read} (WAR), la quale comporta che il flusso nella \textit{pipeline} non possa proseguire in quanto si deve scrivere su un registro che una istruzione precedente deve leggere ma non ha ancora letto. Fortunatamente le alee WAR non sono possibili in quanto gli operandi
-sono sempre letti in nella fase ID, quindi Ë impossibile che, quando si legge un operando, l'istruzione successiva
-l'abbia gi‡ aggiornato.
+sono sempre letti in nella fase ID, quindi √® impossibile che, quando si legge un operando, l'istruzione successiva
+l'abbia gi√† aggiornato.
 
-La dipendenza d'uscita, invece, comporta l'alea \textit{Write After Write} (WAW), che si ha quando il flusso nella \textit{pipeline} non puÚ proseguire in quanto una istruzione precedente deve ancora scrivere su un registro che anche
+La dipendenza d'uscita, invece, comporta l'alea \textit{Write After Write} (WAW), che si ha quando il flusso nella \textit{pipeline} non pu√≤ proseguire in quanto una istruzione precedente deve ancora scrivere su un registro che anche
 l'istruzione corrente deve aggiornare.
 \begin{figure}[!h]
 \centering
@@ -184,7 +184,7 @@ l'istruzione corrente deve aggiornare.
 \label{fig:areaWAW}
 \end{figure}
 Come risolvere l'erronea scrittura di un registro (vedi fig. \ref{fig:areaWAW})? Possiamo pensare di intimare alla prima istruzione di non aggiornare F5 (in alcuni casi le alee WAW si possono eliminare inibendo il
-completamento dell'istruzione che determina il malfunzionamento), potremmo effettuare qualche altra istruzione tra la prima e la seconda oppure, se proprio non abbiamo scelta, non ci rimarr‡ che stallare. In particolare, si dice che una \textit{pipeline} gestisce le eccezioni in modo preciso se essa puÚ essere fermata in modo che tutte le istruzioni precedenti l'istruzione in cui l'eccezione si Ë verificata siano completate, mentre tutte le istruzioni successive non modifichino lo stato della CPU prima che l'eccezione sia stata servita.
+completamento dell'istruzione che determina il malfunzionamento), potremmo effettuare qualche altra istruzione tra la prima e la seconda oppure, se proprio non abbiamo scelta, non ci rimarr√† che stallare. In particolare, si dice che una \textit{pipeline} gestisce le eccezioni in modo preciso se essa pu√≤ essere fermata in modo che tutte le istruzioni precedenti l'istruzione in cui l'eccezione si √® verificata siano completate, mentre tutte le istruzioni successive non modifichino lo stato della CPU prima che l'eccezione sia stata servita.
 \end{itemize}
 
 In alcuni casi le alee possono rivelarsi davvero pervasive (vedi fig. \ref{fig:aleeABalusa}).
@@ -194,7 +194,7 @@ In alcuni casi le alee possono rivelarsi davvero pervasive (vedi fig. \ref{fig:a
 \caption{Sequenza non indifferente di alee}
 \label{fig:aleeABalusa}
 \end{figure}
-Per evitare situazioni erronee si effettua la fase di \textit{fetch} in sequenza e poi l'ordine viene stabilito dal microprocessore in base alle alee: il criterio Ë quello di eseguire le istruzioni nell'ordine in cui si hanno a disposizione gli operandi (modalit‡ di tipo \textit{data flow}).
+Per evitare situazioni erronee si effettua la fase di \textit{fetch} in sequenza e poi l'ordine viene stabilito dal microprocessore in base alle alee: il criterio √® quello di eseguire le istruzioni nell'ordine in cui si hanno a disposizione gli operandi (modalit√† di tipo \textit{data flow}).
 Questo comporta l'essere in grado di poter rinominare i registri (\textit{register renaming}) con valori temporanei (vedi fig. \ref{fig:aleeABalusa2}).
 \begin{figure}[!h]
 \centering
@@ -212,7 +212,7 @@ Esempio:
 BEQZ    R6, PIPPO
 ADD     R6, R7, R8
 \end{verbatim}
-Queste istruzioni non possono essere eseguite in parallelo: prima va verificata la condizione, poi si calcola dove si deve saltare e infine si valuta se saltare oppure no. Una politica spesso adottata dai processori Ë quella di \textit{predire di non saltare}, ovvero supporre che non sar‡ necessario effettuare la \textit{branch}: questa scelta rientra nell'ambito della cosiddetta \textit{esecuzione speculativa} e comporta l'eseguire in maniera "'provvisoria'" istruzioni successive a quella del salto, per poi darle per buone in caso di corretta previsione oppure scartarle nel caso di predizione sbagliata (\textit{misprediction}).
+Queste istruzioni non possono essere eseguite in parallelo: prima va verificata la condizione, poi si calcola dove si deve saltare e infine si valuta se saltare oppure no. Una politica spesso adottata dai processori √® quella di \textit{predire di non saltare}, ovvero supporre che non sar√† necessario effettuare la \textit{branch}: questa scelta rientra nell'ambito della cosiddetta \textit{esecuzione speculativa} e comporta l'eseguire in maniera "'provvisoria'" istruzioni successive a quella del salto, per poi darle per buone in caso di corretta previsione oppure scartarle nel caso di predizione sbagliata (\textit{misprediction}).
 
 \begin{figure}[!h]
 \centering
@@ -221,20 +221,20 @@ Queste istruzioni non possono essere eseguite in parallelo: prima va verificata 
 \label{fig:flowChartTipo}
 \end{figure}
 
-Statisticamente si Ë appurato che, tra \textit{branch} e \textit{branch}, vi sono sempre circa 5-6 istruzioni indipendenti (vedi fig. \ref{fig:flowChartTipo}). Nell'esecuzione speculativa, quindi viene in genere eseguito almeno un BB (\textit{basic block}) successivo dopo una \textit{branch}, validando ciÚ che si Ë fatto una volta che si Ë scoperto di aver evitato l'alea oppure annullando tutto in caso di \textit{misprediction} (qui torna utile l'abilit‡ della CPU di poter fermare la \textit{pipeline} in modo che tutte le istruzioni precedenti la \textit{branch} siano completate e senza che le istruzioni successive abbiano effetto).
+Statisticamente si √® appurato che, tra \textit{branch} e \textit{branch}, vi sono sempre circa 5-6 istruzioni indipendenti (vedi fig. \ref{fig:flowChartTipo}). Nell'esecuzione speculativa, quindi viene in genere eseguito almeno un BB (\textit{basic block}) successivo dopo una \textit{branch}, validando ci√≤ che si √® fatto una volta che si √® scoperto di aver evitato l'alea oppure annullando tutto in caso di \textit{misprediction} (qui torna utile l'abilit√† della CPU di poter fermare la \textit{pipeline} in modo che tutte le istruzioni precedenti la \textit{branch} siano completate e senza che le istruzioni successive abbiano effetto).
 
 \section{L'approccio di Tomasulo}
 \label{sec:tomasulo}
 
-L'algoritmo di Tomasulo Ë un approccio di \textit{scheduling} dinamico per l'esecuzione delle istruzioni:
+L'algoritmo di Tomasulo √® un approccio di \textit{scheduling} dinamico per l'esecuzione delle istruzioni:
 \begin{itemize}
 \item consente di riconoscere situazioni di ILP non riconoscibili al tempo di compilazione;
-\item riduce la complessit‡ dei compilatori;
+\item riduce la complessit√† dei compilatori;
 \item consente al codice compilato per una \textit{pipeline} di essere eseguito anche su \textit{pipeline} diverse;
-\item rende molto pi˘ complesso l'hardware dell'unit‡ di esecuzione.
+\item rende molto pi√π complesso l'hardware dell'unit√† di esecuzione.
 \end{itemize}
 
-In base ad esso, ogni unit‡ di esecuzione \textit{multicycle} viene equipaggiata con stazioni di prenotazione (\textit{reservation stations}) che ospitano sia l'istruzione in esecuzione, sia istruzioni pronte per essere eseguite e in attesa dell'unit‡ di esecuzione, sia istruzioni sospese in attesa di uno o due
+In base ad esso, ogni unit√† di esecuzione \textit{multicycle} viene equipaggiata con stazioni di prenotazione (\textit{reservation stations}) che ospitano sia l'istruzione in esecuzione, sia istruzioni pronte per essere eseguite e in attesa dell'unit√† di esecuzione, sia istruzioni sospese in attesa di uno o due
 operandi. Nello stadio ID l'istruzione viene decodificata e inviata a una appropriata \textit{reservation
 station}, se disponibile; altrimenti, causa alea strutturale o mancanza di
 \textit{reservation stations}, si stalla. 
@@ -246,7 +246,7 @@ station}, se disponibile; altrimenti, causa alea strutturale o mancanza di
 \label{fig:tomasulo}
 \end{figure}
 
-Alla \textit{reservation station} vengono inviati anche gli operandi, se disponibili; altrimenti si invia l'identificatore (\textit{tag}) della RS che fornir‡ l'operando mancante (nel caso dell'alea di dato). Il risultato generato dall'unit‡ EX, insieme al \textit{tag} della RS che identifica l'operazione eseguita, viene messo a disposizione del \textit{register file} (in modo che possano usufruirne tutte le unit‡ di EX che lo richiedono) e dello stadio MEM (attraverso il \textit{Common Result Bus}). Le alee RAW sono dunque risolte con il \textit{forwarding} (cioË l'invio) dei risultati a tutte le unit‡ che hanno bisogno di operandi (\textit{reservation stations} e memorie).
+Alla \textit{reservation station} vengono inviati anche gli operandi, se disponibili; altrimenti si invia l'identificatore (\textit{tag}) della RS che fornir√† l'operando mancante (nel caso dell'alea di dato). Il risultato generato dall'unit√† EX, insieme al \textit{tag} della RS che identifica l'operazione eseguita, viene messo a disposizione del \textit{register file} (in modo che possano usufruirne tutte le unit√† di EX che lo richiedono) e dello stadio MEM (attraverso il \textit{Common Result Bus}). Le alee RAW sono dunque risolte con il \textit{forwarding} (cio√® l'invio) dei risultati a tutte le unit√† che hanno bisogno di operandi (\textit{reservation stations} e memorie).
 
 \begin{figure}[!h]
 \centering
@@ -255,13 +255,13 @@ Alla \textit{reservation station} vengono inviati anche gli operandi, se disponi
 \label{fig:tomasulo2}
 \end{figure}
 
-Colui che ha bisogno di un risultato controller‡ il CRB cercando in base al tag. Infatti, ad ogni unit‡ che produce risultati (\textit{Load Buffer, Reservation Station}), Ë associato un identificatore che viagger‡ sul \textit{Result Bus} insieme al risultato stesso.
+Colui che ha bisogno di un risultato controller√† il CRB cercando in base al tag. Infatti, ad ogni unit√† che produce risultati (\textit{Load Buffer, Reservation Station}), √® associato un identificatore che viagger√† sul \textit{Result Bus} insieme al risultato stesso.
 
 Le \textit{reservation station} hanno 6 campi (in figura \ref{fig:tomasulo2} ne vengono illustrati solo 2):
 \begin{itemize}
-\item  BUSY: indica se la RS Ë libera o occupata
+\item  BUSY: indica se la RS √® libera o occupata
 \item  $Q_j$ e $Q_k$: contengono l'identificatore del \textit{Load Buffer} o della \textit{Reservation
-Station} che produrr‡ l'operando sorgente ($j$: 1∞ operando, $k$: 2∞ operando)
+Station} che produrr√† l'operando sorgente ($j$: 1¬∞ operando, $k$: 2¬∞ operando)
 \item  $V_j$ e $V_k$: contengono l'operando se $Q_j$ / $Q_k$ = 0
 \item  OP: operazione da eseguire (Es: FADD/FSUB\ldots)
 \end{itemize}
@@ -272,14 +272,14 @@ Station} che produrr‡ l'operando sorgente ($j$: 1∞ operando, $k$: 2∞ operando)
 \label{fig:reservationStation}
 \end{figure}
 
-Poniamo ora di essere nella fase di ID (per ipotesi) di un'operazione DIV fra gli operandi OP1 e OP2. Abbiamo una \textit{reservation station} libera? Se sÏ la prenotiamo e, nel \textit{register file}, scriviamo la coppia (RS, UE): questo significa che il \textit{register file} aspetta il risultato dalla \textit{reservation station} RS appartenente all'unit‡ operativa UE. Quando essa giunge alla fase di WB, viene scritto su CRB il risultato abbinato al relativo \textit{tag}: a quel punto il \textit{register file} si accorge che il risultato c'Ë Ë setta l'identificativo "'0'" (= dato disponibile, vedi campo \textit{registro} in fig. \ref{fig:tomasulo2}) presso il relativo operando. In questo modo deleghiamo la comunicazione del risultato alla \textit{reservation station}, utilizzando i \textit{tag} per suggerire cosa dovr‡ essere pescato dal \textit{common result bus}.
+Poniamo ora di essere nella fase di ID (per ipotesi) di un'operazione DIV fra gli operandi OP1 e OP2. Abbiamo una \textit{reservation station} libera? Se s√¨ la prenotiamo e, nel \textit{register file}, scriviamo la coppia (RS, UE): questo significa che il \textit{register file} aspetta il risultato dalla \textit{reservation station} RS appartenente all'unit√† operativa UE. Quando essa giunge alla fase di WB, viene scritto su CRB il risultato abbinato al relativo \textit{tag}: a quel punto il \textit{register file} si accorge che il risultato c'√® √® setta l'identificativo "'0'" (= dato disponibile, vedi campo \textit{registro} in fig. \ref{fig:tomasulo2}) presso il relativo operando. In questo modo deleghiamo la comunicazione del risultato alla \textit{reservation station}, utilizzando i \textit{tag} per suggerire cosa dovr√† essere pescato dal \textit{common result bus}.
 
-I registri posti prima del CRB (vedi fig. \ref{fig:tomasulo}) servono per evitare l'eventualit‡ di due WB contemporanee (NOTA: la disponibilit‡ di un operando si ha a partire dal termine della fase di WB): all'interno dello stesso ciclo di clock possiamo quindi scrivere pi˘ di un registro a monte del CRB, ma su quest'ultimo puÚ essere scritto solo un dato alla volta.
-Di conseguenza si ha che, con un solo CRB, non potremo effettuare pi˘ di un'operazione per clock ($CPI_{max} =1$); con pi˘ CRB Ë invece possibile completare pi˘ istruzioni simultaneamente (cioË in un singolo clock):
+I registri posti prima del CRB (vedi fig. \ref{fig:tomasulo}) servono per evitare l'eventualit√† di due WB contemporanee (NOTA: la disponibilit√† di un operando si ha a partire dal termine della fase di WB): all'interno dello stesso ciclo di clock possiamo quindi scrivere pi√π di un registro a monte del CRB, ma su quest'ultimo pu√≤ essere scritto solo un dato alla volta.
+Di conseguenza si ha che, con un solo CRB, non potremo effettuare pi√π di un'operazione per clock ($CPI_{max} =1$); con pi√π CRB √® invece possibile completare pi√π istruzioni simultaneamente (cio√® in un singolo clock):
 \[
 N_{CRB} = N_{\text{Istruzioni simultaneamente completabili}}
 \]
-Nel caso di unico CRB e necessit‡ di completare due istruzioni, Ë indifferente quale delle due scrivere per prima: negli esercizi si consiglia di scegliere una regola e agire coerentemente ad essa.
+Nel caso di unico CRB e necessit√† di completare due istruzioni, √® indifferente quale delle due scrivere per prima: negli esercizi si consiglia di scegliere una regola e agire coerentemente ad essa.
 
 \section{Architettura protetta e Tomasulo}
 \label{sec:protectedTomasulo}
@@ -290,7 +290,7 @@ FDIV    F5, F1, F2
 FADD    F20, F20, F21
 FSUB    F5, F20, F12
 \end{verbatim}
-Se per caso F2 valesse zero avremmo un'operazione illegale (divisione per zero) e quindi verrebbe lanciata un'eccezione tramite un \textit{interrupt}, che fungerebbe da spartiacque fra le istruzioni precedenti e quelle successive. Se agissimo secondo una logica puramente sequenziale (\textit{In Order Issue}) saremmo costretti a stallare fino alla risoluzione dell'eccezione; se invece eseguissimo \textit{Out Of Order} dovremmo stare attenti a   non sporcare il valore dei registri completando istruzioni successive con operandi non aggiornati. Come abbiamo gi‡ detto, la politica Ë quella di salvare i risultati in un \textit{buffer} temporaneo e di farli diventare definitivi una volta che si Ë effettuato il controllo di \textit{safety}, cioË di sicurezza (correttezza). In effetti questa Ë una parte molto delicata per il funzionamento della nostra \textit{pipeline}: abbiamo accennato infatti alla possibilit‡ di effettuare esecuzione speculativa, azzardando una predizione per un certo numero di istruzioni successive (dipendente dal numero di \textit{reservation station}), e abbiamo sottolineato l'importanza di poter annullare quanto supposto in caso di \textit{misprediction}. Quanto auspicato Ë ottenibile con Tomasulo se aggiungiamo una fase di \textit{Write Temporary} (WT, vedi fig. \ref{fig:safetyTomasulo}), durante la quale Ë il ROB (\textit{re-order buffer}, vedi fig. \ref{fig:safetyTomasulo2}) e non il \textit{register file} a mettere a disposizione i risultati.
+Se per caso F2 valesse zero avremmo un'operazione illegale (divisione per zero) e quindi verrebbe lanciata un'eccezione tramite un \textit{interrupt}, che fungerebbe da spartiacque fra le istruzioni precedenti e quelle successive. Se agissimo secondo una logica puramente sequenziale (\textit{In Order Issue}) saremmo costretti a stallare fino alla risoluzione dell'eccezione; se invece eseguissimo \textit{Out Of Order} dovremmo stare attenti a   non sporcare il valore dei registri completando istruzioni successive con operandi non aggiornati. Come abbiamo gi√† detto, la politica √® quella di salvare i risultati in un \textit{buffer} temporaneo e di farli diventare definitivi una volta che si √® effettuato il controllo di \textit{safety}, cio√® di sicurezza (correttezza). In effetti questa √® una parte molto delicata per il funzionamento della nostra \textit{pipeline}: abbiamo accennato infatti alla possibilit√† di effettuare esecuzione speculativa, azzardando una predizione per un certo numero di istruzioni successive (dipendente dal numero di \textit{reservation station}), e abbiamo sottolineato l'importanza di poter annullare quanto supposto in caso di \textit{misprediction}. Quanto auspicato √® ottenibile con Tomasulo se aggiungiamo una fase di \textit{Write Temporary} (WT, vedi fig. \ref{fig:safetyTomasulo}), durante la quale √® il ROB (\textit{re-order buffer}, vedi fig. \ref{fig:safetyTomasulo2}) e non il \textit{register file} a mettere a disposizione i risultati.
 
 \begin{figure}[!h]
 \centering
@@ -306,15 +306,15 @@ Se per caso F2 valesse zero avremmo un'operazione illegale (divisione per zero) 
 \label{fig:safetyTomasulo2}
 \end{figure}
 
-Quando abbiamo predetto bene, nel ROB vengono posti degli 1 in prossimit‡ delle istruzioni eseguite perchÈ potevano effettivamente esserlo. Una volta che tale ambiguit‡ Ë stata risolta, la parte completata viene svuotata dal ROB.
-Pertanto, in questo nuova logica, il TAG non Ë pi˘ (RS, UE) ma l'indice nel ROB in cui Ë posta l'istruzione che deve restituirci il risultato.
+Quando abbiamo predetto bene, nel ROB vengono posti degli 1 in prossimit√† delle istruzioni eseguite perch√© potevano effettivamente esserlo. Una volta che tale ambiguit√† √® stata risolta, la parte completata viene svuotata dal ROB.
+Pertanto, in questo nuova logica, il TAG non √® pi√π (RS, UE) ma l'indice nel ROB in cui √® posta l'istruzione che deve restituirci il risultato.
 
-Questo sistema Ë robustissimo con le alee RAW e, abbinato a una robusta logica di predizione (per evitare le alee di controllo in particolare), garantisce un'ottima protezione. 
+Questo sistema √® robustissimo con le alee RAW e, abbinato a una robusta logica di predizione (per evitare le alee di controllo in particolare), garantisce un'ottima protezione. 
 
 \section{Protezione e memorie associative}
 \label{sec:memorieAssociative}
 
-Il problema dell'esecuzione speculativa richiede una nuova struttura dati per memorizzare i PC relativi ad una scelta di predizione rispetto che ad un altra (vedi fig. \ref{fig:plusFour}): una scelta funzionale e in grado di garantire velocit‡ e affidabilit‡ Ë quella che vede l'utilizzazione di una memoria associativa (nome/valore, detta CAM - \textit{Content Access Memory}).
+Il problema dell'esecuzione speculativa richiede una nuova struttura dati per memorizzare i PC relativi ad una scelta di predizione rispetto che ad un altra (vedi fig. \ref{fig:plusFour}): una scelta funzionale e in grado di garantire velocit√† e affidabilit√† √® quella che vede l'utilizzazione di una memoria associativa (nome/valore, detta CAM - \textit{Content Access Memory}).
 
 \begin{figure}[!h]
 \centering
@@ -324,7 +324,7 @@ Il problema dell'esecuzione speculativa richiede una nuova struttura dati per me
 \end{figure}
 
 Ogni volta che si abbisogna di un dato si controlla ispezionando la colonna \textit{nome} della nostra memoria: se trovo l'informazione cercata ho una \textit{hit}, altrimenti una \textit{miss}.
-Volendo costruire questo tipo di memoria affinchÈ sia superveloce bisogna inserire un comparatore per ogni elemento della tabella, in modo da confrontare il nome cercato con tutte le possibili \textit{entry} (memoria \textit{fully associative)}: facendo l'OR logico di tutte le uscite dei comparatori (1 = presenza, 0 = assenza) siamo in grado di ottenere in segnale di MISS negato (o di HIT). Con questa scelta bastano pochissimi clock\footnote{Almeno uno, ma non tanti di pi˘!} e la velocit‡ Ë nettamente superiore a quella che si ha con un \textit{loop} software.
+Volendo costruire questo tipo di memoria affinch√© sia superveloce bisogna inserire un comparatore per ogni elemento della tabella, in modo da confrontare il nome cercato con tutte le possibili \textit{entry} (memoria \textit{fully associative)}: facendo l'OR logico di tutte le uscite dei comparatori (1 = presenza, 0 = assenza) siamo in grado di ottenere in segnale di MISS negato (o di HIT). Con questa scelta bastano pochissimi clock\footnote{Almeno uno, ma non tanti di pi√π!} e la velocit√† √® nettamente superiore a quella che si ha con un \textit{loop} software.
 
 \begin{figure}[!h]
 \centering
@@ -333,8 +333,8 @@ Volendo costruire questo tipo di memoria affinchÈ sia superveloce bisogna inseri
 \label{fig:memVScam}
 \end{figure}
 
-A questo punto basta memorizzare, come coppie nome/valore, i PC futuri (cioË predetti) assieme al loro identificatore ed ecco che abbiamo ottenuto una velocissima struttura di predizione.
-Grazie all'apparato di figura \ref{fig:plusFourModified} siamo quindi in grado di saltare, in base ad una corretta (\textit{hit}) o errata (\textit{miss}) predizione, al PC corretto. Il multiplexer in figura Ë un multiplexer a 32 bit e 2 vie (realizzato con 32 multiplexer da 1 bit).
+A questo punto basta memorizzare, come coppie nome/valore, i PC futuri (cio√® predetti) assieme al loro identificatore ed ecco che abbiamo ottenuto una velocissima struttura di predizione.
+Grazie all'apparato di figura \ref{fig:plusFourModified} siamo quindi in grado di saltare, in base ad una corretta (\textit{hit}) o errata (\textit{miss}) predizione, al PC corretto. Il multiplexer in figura √® un multiplexer a 32 bit e 2 vie (realizzato con 32 multiplexer da 1 bit).
 
 \begin{figure}[!h]
 \centering
@@ -343,35 +343,35 @@ Grazie all'apparato di figura \ref{fig:plusFourModified} siamo quindi in grado d
 \label{fig:plusFourModified}
 \end{figure}
 
-Come viene aggiornata la tabella? Il programma, quando scopre l'esistenza di una \textit{branch}, inserisce nella tabella il PC al quale si potr‡ saltare (se il salto avverr‡) definisce una coppia nome/valore. La tabella (memoria associativa) verr‡ quindi esaminata ogniqualvolta si presenter‡ un'istruzione di salto: se sar‡ la prima volta che si effettua tale istruzione\footnote{CAM vuota: si cerca comunque di fare una predizione statica, non potendo fare diversamente.}, avremo obbligatoriamente una \textit{miss} e inseriremo il PC a cui si sarebbe dovuti saltare all'interno della CAM. Le volte successive, invece, saremo pi˘ fortunati se in tabella sar‡ ancora presente la \textit{entry} relativa a quel tipo di salto (cosa che molto plausibile che avvenga, vista l'esistenza del cosiddetto \textit{principio di localit‡ temporale}, il quale in soldoni recita che, effettuando spesso una certa istruzione o attingendo spesso a un dato, Ë molto probabile una futura intensa riutilizzazione di quell'istruzione/dato\footnote{"'Se faccio una cosa la riferÚ, se smetto di farla non la farÚ presumibilmente pi˘'". (cit.)} in tempi relativamente brevi\footnote{Si pensi, ad esempio, ad un loop.}).
+Come viene aggiornata la tabella? Il programma, quando scopre l'esistenza di una \textit{branch}, inserisce nella tabella il PC al quale si potr√† saltare (se il salto avverr√†) definisce una coppia nome/valore. La tabella (memoria associativa) verr√† quindi esaminata ogniqualvolta si presenter√† un'istruzione di salto: se sar√† la prima volta che si effettua tale istruzione\footnote{CAM vuota: si cerca comunque di fare una predizione statica, non potendo fare diversamente.}, avremo obbligatoriamente una \textit{miss} e inseriremo il PC a cui si sarebbe dovuti saltare all'interno della CAM. Le volte successive, invece, saremo pi√π fortunati se in tabella sar√† ancora presente la \textit{entry} relativa a quel tipo di salto (cosa che molto plausibile che avvenga, vista l'esistenza del cosiddetto \textit{principio di localit√† temporale}, il quale in soldoni recita che, effettuando spesso una certa istruzione o attingendo spesso a un dato, √® molto probabile una futura intensa riutilizzazione di quell'istruzione/dato\footnote{"'Se faccio una cosa la rifer√≤, se smetto di farla non la far√≤ presumibilmente pi√π'". (cit.)} in tempi relativamente brevi\footnote{Si pensi, ad esempio, ad un loop.}).
 
 \section{Memorie associative e traduzione degli indirizzi}
 \label{sec:associativeIndirizzi}
 
-La CAM (che, organizzata come descritto, Ë detta anche \textit{Branch Tagged Buffer}) "'accelera la CPU'" conservando al suo interno i PC futuri che andranno quasi-sicuramente bene se vige il regime di localit‡ temporale (come effettivamente accade).
-Nel caso la tabella sia piena o parzialmente piena, la cosa pi˘ logica Ë quella di cancellare l'istruzione non usata da pi˘ tempo: a far questo ci pensa un particolare algoritmo di sostituzione facente uso di una lista, detta \textit{list recently used}, in grado di discriminare le informazioni accedute pi˘ di recente. Inoltre, si cerca di mantenere gelosamente in tabella le istruzioni con il pi˘ basso parametro di \textit{miss-rate}\footnote{Calcolato come rapporta fra numero di \textit{miss} e numero di accessi.} (o il pi˘ alto \textit{hit-rate}), sacrificando piuttosto quelle con un pi˘ alto numero di \textit{miss}.
+La CAM (che, organizzata come descritto, √® detta anche \textit{Branch Tagged Buffer}) "'accelera la CPU'" conservando al suo interno i PC futuri che andranno quasi-sicuramente bene se vige il regime di localit√† temporale (come effettivamente accade).
+Nel caso la tabella sia piena o parzialmente piena, la cosa pi√π logica √® quella di cancellare l'istruzione non usata da pi√π tempo: a far questo ci pensa un particolare algoritmo di sostituzione facente uso di una lista, detta \textit{list recently used}, in grado di discriminare le informazioni accedute pi√π di recente. Inoltre, si cerca di mantenere gelosamente in tabella le istruzioni con il pi√π basso parametro di \textit{miss-rate}\footnote{Calcolato come rapporta fra numero di \textit{miss} e numero di accessi.} (o il pi√π alto \textit{hit-rate}), sacrificando piuttosto quelle con un pi√π alto numero di \textit{miss}.
 
 Questa tecnica viene utilizzata anche per la traduzione degli indirizzi delle istruzioni in \textit{cache} (indirizzati con 15 bit\footnote{Supponendo che la \textit{cache} sia di 32 KB.}) e quelle in memoria centrale (indirizzate con 32 bit\footnote{Supponendo che la memoria centrale sia di 4 GB.}). 
 \[
 IF_{32} \Rightarrow IC_{15}
 \]
-Stessa cosa puÚ essere fatta tra memoria centrale e memoria virtuale\footnote{In informatica, la memoria virtuale Ë un tipo di memoria che ha la stessa funzione della RAM, ma viene usata solo se quest'ultima Ë piena e non riesce pi˘ a contenere informazioni; questo risultato si raggiunge utilizzando spazio di memoria secondaria su altri dispositivi, di solito le unit‡ a disco (purtroppo pi˘ lente). La memoria centrale fisicamente presente diventa quindi la parte effettivamente utilizzata di quella virtuale, pi˘ grande: questo stratagemma Ë utile in virt˘ del principio di localit‡ e riuso dell'esecuzione dei programmi.}
+Stessa cosa pu√≤ essere fatta tra memoria centrale e memoria virtuale\footnote{In informatica, la memoria virtuale √® un tipo di memoria che ha la stessa funzione della RAM, ma viene usata solo se quest'ultima √® piena e non riesce pi√π a contenere informazioni; questo risultato si raggiunge utilizzando spazio di memoria secondaria su altri dispositivi, di solito le unit√† a disco (purtroppo pi√π lente). La memoria centrale fisicamente presente diventa quindi la parte effettivamente utilizzata di quella virtuale, pi√π grande: questo stratagemma √® utile in virt√π del principio di localit√† e riuso dell'esecuzione dei programmi.}
 
 \section{\textit{Pipeline} e linguaggi \textit{memory-register}}
 \label{sec:pipelineMemoryRegister}
 
-Quasi tutti gli esempi fatti fin'ora fanno riferimento alla struttura del DLX (registro-registro): come viene perÚ implementata la \textit{pipeline} nei sistemi memoria-registro, con particolare riferimento al calcolo degli indirizzi (il quale dev'essere effettuato in maniera assolutamente trasparente)?
+Quasi tutti gli esempi fatti fin'ora fanno riferimento alla struttura del DLX (registro-registro): come viene per√≤ implementata la \textit{pipeline} nei sistemi memoria-registro, con particolare riferimento al calcolo degli indirizzi (il quale dev'essere effettuato in maniera assolutamente trasparente)?
 
 Per esemplificare consideriamo un linguaggio di tipo Intel e l'istruzione:
 \begin{verbatim}
 ADD     DS:[BX+DI], ALFA, AL
 \end{verbatim}
-L'indirizzo logico dell'operando sul quale andiamo ad agire Ë costituito dal binomio (base, offset) = $(DS, BX + DI + ALFA)$.
-L'indirizzo fisico sar‡ invece pari a: $DS \cdot 2^4 + BX + DI + ALFA$ (dove il $2^4$ Ë dovuto al fatto che l'indirizzo in DS [\textit{Data Segment}] ha i quattro bit meno significativi sempre posti a 0 in quanto indirizziamo blocchi di $2^4$ byte sulla memoria fisica di 1 MB).
+L'indirizzo logico dell'operando sul quale andiamo ad agire √® costituito dal binomio (base, offset) = $(DS, BX + DI + ALFA)$.
+L'indirizzo fisico sar√† invece pari a: $DS \cdot 2^4 + BX + DI + ALFA$ (dove il $2^4$ √® dovuto al fatto che l'indirizzo in DS [\textit{Data Segment}] ha i quattro bit meno significativi sempre posti a 0 in quanto indirizziamo blocchi di $2^4$ byte sulla memoria fisica di 1 MB).
 Dunque il calcolo dell'indirizzo fisico richiede di effettuare tre somme, terminate le quali l'indirizzo viene schiaffato\footnote{Termine tecnico.} sul bus degli indirizzi ($BA19,\ldots,BA0$).
 
 Come effettuare queste operazioni in una \textit{pipeline}? Una prima modifica alla \textit{pipeline} che conosciamo, consiste nell'introduzione di un nuovo stadio a valle di ID destinato a calcolare l'indirizzo dell'operando in memoria (AG,\textit{ Address Generator}, o ID2, nome adottato da Intel per il Pentium): a tal fine lo stadio AG deve disporre di tre sommatori veloci in cascata.
-Una seconda modifica consiste nel riunire i due stadi EX e MEM in un unico stadio (multiciclo) in cui sono localizzate la ALU e la cache dei dati. Questo stadio detto EX-MEM imporr‡ alle istruzioni la permanenza di un numero di colpi di clock variabile in funzione dell'istruzione eseguita: la valutazione viene effettuata considerando quante operazioni elementari di ALU o di accesso alla memoria devono essere effettuate per eseguire correttamente l'istruzione considerata\footnote{Esempi:
+Una seconda modifica consiste nel riunire i due stadi EX e MEM in un unico stadio (multiciclo) in cui sono localizzate la ALU e la cache dei dati. Questo stadio detto EX-MEM imporr√† alle istruzioni la permanenza di un numero di colpi di clock variabile in funzione dell'istruzione eseguita: la valutazione viene effettuata considerando quante operazioni elementari di ALU o di accesso alla memoria devono essere effettuate per eseguire correttamente l'istruzione considerata\footnote{Esempi:
 \begin{itemize}
 \item  le istruzioni di trasferimento dati (con \textit{hit} in \textit{cache} dati) restano in EX-MEM un
 periodo di clock;
@@ -390,10 +390,10 @@ per aggiornare la memoria).
 \label{fig:intelDataPath}
 \end{figure}
 
-Rispetto al DLX le cose vanno leggermente meglio grazie alla migliore densit‡ del codice (il linguaggio Intel Ë CISC): il tutto mantenendo un CPI medio piuttosto piccolo (caratteristica dei sistemi RISC).
+Rispetto al DLX le cose vanno leggermente meglio grazie alla migliore densit√† del codice (il linguaggio Intel √® CISC): il tutto mantenendo un CPI medio piuttosto piccolo (caratteristica dei sistemi RISC).
 
 
-Come ci comportiamo con le istruzioni come quelle di \textit{push all}, in cui Ë necessario tradurre un'unica istruzione di linguaggio-macchina in almeno una decina di istruzioni elementari? La scelta effettuata Ë quella di bloccare la \textit{fetch} mentre viene alimentata la \textit{pipeline} con istruzioni elementari.
+Come ci comportiamo con le istruzioni come quelle di \textit{push all}, in cui √® necessario tradurre un'unica istruzione di linguaggio-macchina in almeno una decina di istruzioni elementari? La scelta effettuata √® quella di bloccare la \textit{fetch} mentre viene alimentata la \textit{pipeline} con istruzioni elementari.
 
 \subsection{Architetture superscalari}
 \label{sec:superscalarArchitectures}
@@ -405,17 +405,17 @@ Come ci comportiamo con le istruzioni come quelle di \textit{push all}, in cui Ë
 \label{fig:superscalare}
 \end{figure}
 
-E se volessimo avere un parametro IPC (\textit{Instructions Per Clock} $= 1/CPI$) maggiore di 1? Dobbiamo ricorrere ad architetture cosiddette \textit{superscalari} (ad es. \textit{Pentium} IA32): si definisce infatti \textit{superscalare} una architettura che puÚ attivare pi˘ di una istruzione nello stesso periodo di clock.
+E se volessimo avere un parametro IPC (\textit{Instructions Per Clock} $= 1/CPI$) maggiore di 1? Dobbiamo ricorrere ad architetture cosiddette \textit{superscalari} (ad es. \textit{Pentium} IA32): si definisce infatti \textit{superscalare} una architettura che pu√≤ attivare pi√π di una istruzione nello stesso periodo di clock.
 Nelle architetture superscalari lo stadio IF preleva in parallelo da IC frammenti di codice di
-lunghezza maggiore o uguale a due istruzioni [nel Pentium: blocchi di codice di dimensione costante (32 byte) passati a ID attraverso un \textit{prefetch buffer}]; nello stadio AG vengono calcolati gli indirizzi degli operandi in memoria: le istruzioni complesse (istruzioni CISC descritte con microcodice) sfruttano le due \textit{pipeline} per una maggiore velocit‡.
+lunghezza maggiore o uguale a due istruzioni [nel Pentium: blocchi di codice di dimensione costante (32 byte) passati a ID attraverso un \textit{prefetch buffer}]; nello stadio AG vengono calcolati gli indirizzi degli operandi in memoria: le istruzioni complesse (istruzioni CISC descritte con microcodice) sfruttano le due \textit{pipeline} per una maggiore velocit√†.
 
 In caso di istruzioni di trasferimento del controllo l'indirizzo di \textit{fetch} viene generato
-dalla logica di predizione (ad esempio grazie alle memorie associative); successivamente IF prelever‡ codice anche dall'indirizzo associato alla situazione di \textit{misprediction} e lo appogger‡ sull'altro \textit{prefetch buffer} Le istruzioni da decodificare si prelevano dallo stesso \textit{prefetch buffer} finchÈ non si
-verifica un errore di predizione, che viene rilevato alla fine della \textit{pipeline}. In caso di errore di predizione le \textit{pipeline} vengono svuotate e cambia il \textit{prefetch buffer} da cui si preleva il codice da eseguire: il \textit{prefetch buffer} Ë quindi in grado di ridurre il numero di stalli in caso di \textit{misprediction}.
+dalla logica di predizione (ad esempio grazie alle memorie associative); successivamente IF prelever√† codice anche dall'indirizzo associato alla situazione di \textit{misprediction} e lo appogger√† sull'altro \textit{prefetch buffer} Le istruzioni da decodificare si prelevano dallo stesso \textit{prefetch buffer} finch√© non si
+verifica un errore di predizione, che viene rilevato alla fine della \textit{pipeline}. In caso di errore di predizione le \textit{pipeline} vengono svuotate e cambia il \textit{prefetch buffer} da cui si preleva il codice da eseguire: il \textit{prefetch buffer} √® quindi in grado di ridurre il numero di stalli in caso di \textit{misprediction}.
 
 ID riconosce due istruzioni consecutive sul \textit{prefetch buffer}, verifica che le due istruzioni
 possano essere eseguite in parallelo e in tal caso le passa allo stadio a valle insieme al
-contenuto dei registri operandi delle istruzioni. Se le due istruzioni non possono essere eseguite in parallelo (\textit{pairing rules} non soddisfatte), allora viene passata a valle una sola istruzione. Dallo stadio AG in poi le istruzioni che si trovano in stadi omonimi avanzano nella \textit{pipeline} insieme; se una istruzione stalla, staller‡ anche l'altra, e stallano anche tutte le istruzioni che si trovano negli stadi a monte (\textit{pipeline} \textit{bloccanti}), dunque le istruzioni non possono sorpassarsi nella \textit{pipeline} (esecuzione e
+contenuto dei registri operandi delle istruzioni. Se le due istruzioni non possono essere eseguite in parallelo (\textit{pairing rules} non soddisfatte), allora viene passata a valle una sola istruzione. Dallo stadio AG in poi le istruzioni che si trovano in stadi omonimi avanzano nella \textit{pipeline} insieme; se una istruzione stalla, staller√† anche l'altra, e stallano anche tutte le istruzioni che si trovano negli stadi a monte (\textit{pipeline} \textit{bloccanti}), dunque le istruzioni non possono sorpassarsi nella \textit{pipeline} (esecuzione e
 completamento \textit{in ordine}).
 
 Infine, al fine di ridurre gli stalli ogni \textit{pipeline} dispone, in EX-MEM, di un buffer di scrittura su cui
