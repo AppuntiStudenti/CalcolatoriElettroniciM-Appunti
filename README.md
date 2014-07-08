@@ -5,4 +5,4 @@ Calcolatori Elettronici M - (ex Sistemi di Elaborazione dell’Informazione LS)
 
 Credits
 -------
-ASi ringrazia [Ingegnere Pazzo](http://ingegnerepazzo.wordpress.com/) per averci fornito i sorgenti dei suoi appunti.
+Prima edizione degli appunti a cura di [Ingegnere Pazzo](http://ingegnerepazzo.wordpress.com/) grazie per averci fornito i sorgenti.
